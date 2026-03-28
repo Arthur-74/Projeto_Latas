@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-monster-dark: #0a0a0a;
+  --color-monster-neon: #39ff14;
+  --color-monster-green-dark: #1a3a00;
+  --color-monster-white: #e8e8e8;
+  --color-monster-gray: #1c1c1c;
+  --color-monster-red: #cc0000;
+  
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "Rajdhani", sans-serif;
+}
+
+@layer base {
+  html, body {
+    @apply bg-monster-dark text-monster-white font-body m-0 p-0 min-h-screen relative overflow-x-hidden;
+  }
+
+  body::before {
+    content: "";
+    @apply fixed inset-0 z-[-1] opacity-5 pointer-events-none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+}
+
+@layer utilities {
+  .glow-border {
+    box-shadow: 0 0 12px var(--color-monster-neon);
+  }
+  
+  .glow-text {
+    text-shadow: 0 0 8px var(--color-monster-neon);
+  }
+  
+  .clip-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+  }
+
+  .clip-diagonal-btn {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  }
+}

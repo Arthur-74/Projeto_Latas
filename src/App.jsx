@@ -1,0 +1,44 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AppDataProvider } from './context/AppDataContext';
+import { AuthProvider } from './context/AuthContext';
+import { Navbar } from './components/Navbar';
+import { Home } from './pages/Home';
+import { Catalog } from './pages/Catalog';
+import { CanDetail } from './pages/CanDetail';
+import { Dashboard } from './pages/Dashboard';
+import { Profile } from './pages/Profile';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { AdminRoute } from './components/AdminRoute';
+import { AdminCatalog } from './pages/admin/AdminCatalog';
+import { Toaster } from 'react-hot-toast';
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppDataProvider>
+        <Router>
+          <div className="min-h-screen flex flex-col bg-monster-dark text-monster-white">
+            <Toaster position="bottom-right" />
+            <Navbar />
+            <main className="flex-1 flex flex-col relative z-10 w-full mb-16">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/catalog" element={<Catalog />} />
+                <Route path="/catalog/:id" element={<CanDetail />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/u/:username" element={<Profile />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/admin/catalog" element={<AdminRoute><AdminCatalog /></AdminRoute>} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </AppDataProvider>
+    </AuthProvider>
+  );
+}
+
+export default App;
