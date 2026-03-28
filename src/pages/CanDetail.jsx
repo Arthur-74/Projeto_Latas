@@ -4,13 +4,14 @@ import { useAppData } from "../context/AppDataContext";
 import { useAuth } from "../context/AuthContext";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
-import { ArrowLeft, Check, Plus } from "lucide-react";
+import { ArrowLeft, Check, Plus, Heart } from "lucide-react";
+import toast from "react-hot-toast";
 import { cn } from "../lib/utils";
 
 export const CanDetail = () => {
   const { id } = useParams();
   const { getMonsterById } = useAppData();
-  const { user, updateCollection } = useAuth();
+  const { user, updateCollection, toggleFavorite } = useAuth();
   
   const monster = getMonsterById(id);
 
@@ -19,6 +20,30 @@ export const CanDetail = () => {
   }
 
   const isOwned = user?.collection?.includes(monster.id);
+  const isFavorited = user?.favorites?.includes(monster.id);
+
+  const handleToggle = () => {
+    if (!user) {
+      alert("Faça login para adicionar à coleção");
+      return;
+    }
+    const result = updateCollection(monster.id);
+    if (result && result.removedFromFavorites) {
+      toast("Lata removida da coleção e dos favoritos.");
+    }
+  };
+
+  const handleFavorite = () => {
+    if (!user) return;
+    const result = toggleFavorite(monster.id);
+    if (result.success) {
+      if (result.isAdded) {
+        toast.success("❤️ Adicionado aos favoritos!");
+      } else {
+        toast("Removido dos favoritos.");
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -74,21 +99,42 @@ export const CanDetail = () => {
             </div>
           </div>
 
-          <Button 
-            size="lg" 
-            variant={isOwned ? "outline" : "primary"}
-            className={cn("w-full py-6 text-xl", isOwned && "border-monster-neon bg-monster-neon/10")}
-            onClick={() => {
-              if (user) { updateCollection(monster.id) } 
-              else { alert("Faça login para adicionar à coleção") }
-            }}
-          >
-            {isOwned ? (
-              <span className="flex items-center gap-3 text-monster-neon"><Check className="h-6 w-6" /> Lata na sua Coleção</span>
-            ) : (
-              <span className="flex items-center gap-3"><Plus className="h-6 w-6" /> Adicionar à Minha Coleção</span>
+          <div className="flex gap-4 w-full">
+            <Button 
+              size="lg" 
+              variant={isOwned ? "outline" : "primary"}
+              className={cn("flex-1 py-6 text-xl", isOwned && "border-monster-neon bg-monster-neon/10")}
+              onClick={handleToggle}
+            >
+              {isOwned ? (
+                <span className="flex items-center gap-3 text-monster-neon"><Check className="h-6 w-6" /> Lata na sua Coleção</span>
+              ) : (
+                <span className="flex items-center gap-3"><Plus className="h-6 w-6" /> Adicionar à Minha Coleção</span>
+              )}
+            </Button>
+
+            {isOwned && (
+              <Button
+                size="lg"
+                variant="outline"
+                className={cn(
+                  "py-6 px-6 transition-all duration-300",
+                  isFavorited ? "border-[#cc0000] bg-[#cc0000]/10" : "border-gray-600 hover:border-gray-400"
+                )}
+                onClick={handleFavorite}
+                title={isFavorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+              >
+                <Heart 
+                  className={cn(
+                    "h-8 w-8 transition-all duration-300",
+                    isFavorited 
+                      ? "fill-[#cc0000] text-[#cc0000] drop-shadow-[0_0_12px_rgba(204,0,0,0.6)] animate-in zoom-in" 
+                      : "text-gray-400"
+                  )} 
+                />
+              </Button>
             )}
-          </Button>
+          </div>
         </div>
       </div>
     </div>

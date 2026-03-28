@@ -1,15 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Check, Plus } from "lucide-react";
+import { Check, Plus, Heart } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { cn } from "../lib/utils";
 
 export const CanCard = ({ monster }) => {
-  const { user, updateCollection } = useAuth();
+  const { user, updateCollection, toggleFavorite } = useAuth();
   
   const isOwned = user?.collection?.includes(monster.id);
+  const isFavorited = user?.favorites?.includes(monster.id);
 
   const handleToggle = (e) => {
     e.preventDefault();
@@ -17,7 +19,25 @@ export const CanCard = ({ monster }) => {
       alert("Crie uma conta para colecionar!");
       return;
     }
-    updateCollection(monster.id);
+    const result = updateCollection(monster.id);
+    if (result && result.removedFromFavorites) {
+      toast("Lata removida da coleção e dos favoritos.");
+    }
+  };
+
+  const handleFavorite = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return;
+    
+    const result = toggleFavorite(monster.id);
+    if (result.success) {
+      if (result.isAdded) {
+        toast.success("❤️ Adicionado aos favoritos!");
+      } else {
+        toast("Removido dos favoritos.");
+      }
+    }
   };
 
   return (
@@ -60,10 +80,10 @@ export const CanCard = ({ monster }) => {
         </div>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-white/10 w-full z-10" onClick={(e) => e.stopPropagation()}>
+      <div className="mt-4 pt-4 border-t border-white/10 w-full z-10 flex gap-2" onClick={(e) => e.stopPropagation()}>
         <Button 
           variant={isOwned ? "outline" : "primary"} 
-          className="w-full"
+          className="flex-1"
           onClick={handleToggle}
         >
           {isOwned ? (
@@ -72,6 +92,26 @@ export const CanCard = ({ monster }) => {
              <span className="flex items-center gap-2"><Plus className="h-4 w-4" /> Adicionar</span>
           )}
         </Button>
+        {isOwned && (
+          <Button
+            variant="outline"
+            className={cn(
+              "px-3 transition-all duration-300",
+              isFavorited ? "border-[#cc0000] bg-[#cc0000]/10" : "border-gray-600 hover:border-gray-400"
+            )}
+            onClick={handleFavorite}
+            title={isFavorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+          >
+            <Heart 
+              className={cn(
+                "h-5 w-5 transition-all duration-300",
+                isFavorited 
+                  ? "fill-[#cc0000] text-[#cc0000] drop-shadow-[0_0_8px_rgba(204,0,0,0.5)] animate-in zoom-in" 
+                  : "text-gray-400"
+              )} 
+            />
+          </Button>
+        )}
       </div>
     </Link>
   );

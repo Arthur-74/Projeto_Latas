@@ -29,7 +29,8 @@ export const AuthProvider = ({ children }) => {
           role,
           avatarUrl: "",
           memberSince: "2024",
-          collection: ["m-original-green", "m-ultra-white", "m-mango-loco", "m-ultra-fiesta", "m-reserve-watermelon"]
+          collection: ["m-original-green", "m-ultra-white", "m-mango-loco", "m-ultra-fiesta", "m-reserve-watermelon"],
+          favorites: ["m-original-green", "m-mango-loco"]
         };
         setUser(mockUser);
         localStorage.setItem("monsterVault_user", JSON.stringify(mockUser));
@@ -44,7 +45,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateCollection = (canId) => {
-    if (!user) return;
+    if (!user) return { removedFromFavorites: false };
+    
+    let result = { removedFromFavorites: false };
     
     setUser(prev => {
       const isOwned = prev.collection.includes(canId);
@@ -52,10 +55,39 @@ export const AuthProvider = ({ children }) => {
         ? prev.collection.filter(id => id !== canId)
         : [...prev.collection, canId];
         
-      const updatedUser = { ...prev, collection: newCollection };
+      let newFavorites = prev.favorites || [];
+      if (isOwned && newFavorites.includes(canId)) {
+        newFavorites = newFavorites.filter(id => id !== canId);
+        result.removedFromFavorites = true;
+      }
+        
+      const updatedUser = { ...prev, collection: newCollection, favorites: newFavorites };
       localStorage.setItem("monsterVault_user", JSON.stringify(updatedUser));
       return updatedUser;
     });
+    
+    return result;
+  };
+
+  const toggleFavorite = (canId) => {
+    if (!user) return { success: false, error: "not_logged_in" };
+    if (!user.collection.includes(canId)) return { success: false, error: "not_in_collection" };
+    
+    let result = { success: true, isAdded: false };
+    
+    setUser(prev => {
+      const isFav = (prev.favorites || []).includes(canId);
+      const newFavorites = isFav 
+        ? (prev.favorites || []).filter(id => id !== canId)
+        : [...(prev.favorites || []), canId];
+        
+      result.isAdded = !isFav;
+      const updatedUser = { ...prev, favorites: newFavorites };
+      localStorage.setItem("monsterVault_user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+    
+    return result;
   };
 
   const updateUserProfileImage = (type, dataUrl) => {
@@ -71,7 +103,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateCollection, updateUserProfileImage, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateCollection, toggleFavorite, updateUserProfileImage, loading }}>
       {children}
     </AuthContext.Provider>
   );

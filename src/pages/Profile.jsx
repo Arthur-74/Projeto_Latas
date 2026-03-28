@@ -4,14 +4,14 @@ import { useAppData } from "../context/AppDataContext";
 import { useAuth } from "../context/AuthContext";
 import { CanCard } from "../components/CanCard";
 import { Button } from "../components/ui/Button";
-import { UserCheck, Shield, Camera, Trash2 } from "lucide-react";
+import { UserCheck, Shield, Camera, Trash2, Heart, X } from "lucide-react";
 import { ImageCropModal } from "../components/ImageCropModal";
 import toast from "react-hot-toast";
 
 export const Profile = () => {
   const { username } = useParams();
   const { monsters } = useAppData();
-  const { user, updateUserProfileImage } = useAuth();
+  const { user, updateUserProfileImage, toggleFavorite } = useAuth();
   
   const isOwner = user?.username === username;
 
@@ -26,6 +26,10 @@ export const Profile = () => {
   const mockCollectionCount = (username.length * 7) % monsters.length || 5;
   const mockCollection = monsters.slice(0, mockCollectionCount);
   const pct = Math.round((mockCollectionCount / monsters.length) * 100);
+
+  const displayFavorites = isOwner 
+    ? (user?.favorites || []).map(id => monsters.find(m => m.id === id)).filter(Boolean)
+    : mockCollection.slice(0, 3); // mock some favorites for others
 
   // Use state or props depending if looking at self
   const displayAvatar = isOwner && user.avatarUrl ? user.avatarUrl : null;
@@ -162,18 +166,44 @@ export const Profile = () => {
         </div>
 
         {/* Favorite Showcase */}
-        {mockCollection.length >= 3 && (
-          <div className="mb-16">
-            <h3 className="text-xl font-display text-white uppercase tracking-widest border-l-4 border-monster-neon pl-3 mb-6">
-              Vitrine de Favoritas
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-               {mockCollection.slice(0, 3).map(can => (
-                 <CanCard key={`fav-${can.id}`} monster={can} />
-               ))}
+        <div className="mb-16">
+          <h3 className="text-xl font-display text-white uppercase tracking-widest border-l-4 border-monster-neon pl-3 mb-6">
+            Vitrine de Favoritas
+          </h3>
+          
+          {displayFavorites.length === 0 ? (
+            <div className="bg-monster-gray/30 border border-white/5 p-12 flex flex-col items-center justify-center clip-diagonal">
+              <Heart className="h-12 w-12 text-gray-600 mb-4" />
+              <p className="text-gray-400 font-display uppercase tracking-widest">Nenhuma lata favoritada ainda.</p>
             </div>
-          </div>
-        )}
+          ) : (
+            <div 
+              className="flex overflow-x-auto gap-6 pb-4 snap-x relative z-20"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {displayFavorites.slice(0, 6).map(can => (
+                <div key={`fav-${can.id}`} className="min-w-[280px] max-w-[280px] snap-center relative group">
+                  <CanCard monster={can} />
+                  
+                  {isOwner && (
+                    <button
+                      onClick={(e) => {
+                         e.preventDefault();
+                         e.stopPropagation();
+                         toggleFavorite(can.id);
+                         toast("Lata removida da vitrine.");
+                      }}
+                      className="absolute top-2 right-2 z-50 bg-[#cc0000] text-white p-2 hover:bg-white hover:text-[#cc0000] transition-colors shadow-lg opacity-0 group-hover:opacity-100 glow-border"
+                      title="Remover dos favoritos"
+                    >
+                      <X className="h-5 w-5 stroke-[3]" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Full Collection grid */}
         <div className="mb-16">
