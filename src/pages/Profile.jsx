@@ -4,6 +4,8 @@ import { useAppData } from "../context/AppDataContext";
 import { useAuth } from "../context/AuthContext";
 import { CanCard } from "../components/CanCard";
 import { Button } from "../components/ui/Button";
+import { AchievementsCard } from "../components/AchievementsCard";
+import { updateAchievementProgress } from "../lib/achievementsApi";
 import { UserCheck, Shield, Camera, Trash2, Heart, X } from "lucide-react";
 import { ImageCropModal } from "../components/ImageCropModal";
 import toast from "react-hot-toast";
@@ -161,8 +163,24 @@ export const Profile = () => {
           </div>
           
           <div className="mb-4">
-             <Button className="w-full md:w-auto"><UserCheck className="mr-2 h-4 w-4" /> Seguir Perfil</Button>
+             <Button 
+               className="w-full md:w-auto"
+               onClick={() => {
+                 toast.success(`Seguindo ${username} agora!`);
+                 if (user?.id) {
+                   updateAchievementProgress(user.id, "following_count", 1);
+                   updateAchievementProgress(`mock-${username}`, "followers_count", 1);
+                 }
+               }}
+             >
+               <UserCheck className="mr-2 h-4 w-4" /> Seguir Perfil
+             </Button>
           </div>
+        </div>
+
+        {/* Public Achievements Board */}
+        <div className="mb-16">
+          <AchievementsCard userId={isOwner ? user.id : `mock-${username}`} isOwner={isOwner} />
         </div>
 
         {/* Favorite Showcase */}

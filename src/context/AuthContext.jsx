@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { updateAchievementProgress } from "../lib/achievementsApi";
+import { monstersData } from "../data/monsters";
 
 const AuthContext = createContext();
 
@@ -34,6 +36,12 @@ export const AuthProvider = ({ children }) => {
         };
         setUser(mockUser);
         localStorage.setItem("monsterVault_user", JSON.stringify(mockUser));
+        
+        // Triggers achievements on login
+        if (mockUser.id) {
+          updateAchievementProgress(mockUser.id, "login_streak", 1);
+        }
+        
         resolve({ success: true, user: mockUser });
       }, 800);
     });
@@ -50,10 +58,38 @@ export const AuthProvider = ({ children }) => {
     let result = { removedFromFavorites: false };
     
     setUser(prev => {
+      let newCollection = prev.collection;
       const isOwned = prev.collection.includes(canId);
-      const newCollection = isOwned 
-        ? prev.collection.filter(id => id !== canId)
-        : [...prev.collection, canId];
+      
+      if (isOwned) {
+        newCollection = prev.collection.filter(id => id !== canId);
+      } else {
+        newCollection = [...prev.collection, canId];
+        
+        // Gamification Triggers
+        const monster = monstersData.find(m => m.id === canId);
+        if (monster) {
+           updateAchievementProgress(prev.id, "total_cans", 1);
+           updateAchievementProgress(prev.id, "unique_cans", 1);
+           
+           const hasFlavor = prev.collection.some(id => monstersData.find(m => m.id === id)?.flavor === monster.flavor);
+           if (!hasFlavor) updateAchievementProgress(prev.id, "unique_flavors", 1);
+           
+           const hasCountry = prev.collection.some(id => monstersData.find(m => m.id === id)?.country === monster.country);
+           if (!hasCountry) updateAchievementProgress(prev.id, "countries_count", 1);
+           
+           if (monster.edition_type && monster.edition_type.toLowerCase().includes("limited")) {
+              updateAchievementProgress(prev.id, "limited_edition", 1);
+           }
+           if (monster.rarity && monster.rarity.toLowerCase().includes("ultra")) {
+              updateAchievementProgress(prev.id, "ultra_special_cans", 1);
+           }
+           // simulate no barcode for testing if year is old
+           if (monster.year < 2010) {
+              updateAchievementProgress(prev.id, "no_barcode_cans", 1);
+           }
+        }
+      }
         
       let newFavorites = prev.favorites || [];
       if (isOwned && newFavorites.includes(canId)) {

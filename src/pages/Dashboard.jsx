@@ -4,6 +4,9 @@ import { useAppData } from "../context/AppDataContext";
 import { Link, Navigate } from "react-router-dom";
 import { CanCard } from "../components/CanCard";
 import { Trophy, Flame, Zap } from "lucide-react";
+import { AchievementsCard } from "../components/AchievementsCard";
+
+const ENABLE_NEW_ACHIEVEMENTS = true;
 
 export const Dashboard = () => {
   const { user } = useAuth();
@@ -47,14 +50,16 @@ export const Dashboard = () => {
       </section>
 
       {/* Trophies & Stats */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
-          <Trophy className="h-10 w-10 text-yellow-500" />
-          <div>
-            <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Conquistas</div>
-            <div className="text-2xl font-display text-white">3 Desbloqueadas</div>
+      <section className={`grid grid-cols-1 md:grid-cols-${ENABLE_NEW_ACHIEVEMENTS ? '2' : '3'} gap-6`}>
+        {!ENABLE_NEW_ACHIEVEMENTS && (
+          <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
+            <Trophy className="h-10 w-10 text-yellow-500" />
+            <div>
+              <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Conquistas</div>
+              <div className="text-2xl font-display text-white">3 Desbloqueadas</div>
+            </div>
           </div>
-        </div>
+        )}
         <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
           <Flame className="h-10 w-10 text-monster-red" />
           <div>
@@ -70,6 +75,13 @@ export const Dashboard = () => {
           </div>
         </div>
       </section>
+
+      {/* New Achievements System */}
+      {ENABLE_NEW_ACHIEVEMENTS && (
+        <section>
+          <AchievementsCard userId={user.id} isOwner={true} />
+        </section>
+      )}
 
       {/* Last Added */}
       {latestCans.length > 0 && (
