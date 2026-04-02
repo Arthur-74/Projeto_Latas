@@ -20,11 +20,14 @@ export const Home = () => {
         <div className="absolute inset-0 z-0 bg-gradient-to-t from-monster-dark via-transparent to-transparent opacity-90" />
         
         <div className="relative z-10 container mx-auto px-4 flex flex-col items-center text-center">
-          <h1 className="text-8xl md:text-[12rem] font-display text-white/5 uppercase tracking-tighter leading-none glow-text select-none">
-            VAULT
+          <h1 className="text-8xl md:text-[12rem] font-display text-monster-white uppercase tracking-tighter leading-none select-none italic">
+            MONSTER
           </h1>
-          <h4 className="text-xl md:text-3xl text-monster-neon font-display tracking-[0.3em] font-bold mt-[-3rem] md:mt-[-4rem] mb-8">
-            CATÁLOGO OFICIAL DE COLECIONADORES
+          <h2 className="text-4xl md:text-[4.5rem] text-[#39ff14] font-display font-light mt-[-1rem] md:mt-[-2.5rem] drop-shadow-[0_0_8px_rgba(57,255,20,0.5)] italic">
+            For Collectors
+          </h2>
+          <h4 className="text-xl md:text-3xl text-monster-white font-display tracking-[0.3em] font-bold mb-8 uppercase">
+            For every monster collector
           </h4>
           
           <div className="flex gap-4 mt-8 flex-wrap justify-center min-h-[56px] items-center">

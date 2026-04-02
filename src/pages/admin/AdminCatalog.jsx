@@ -77,7 +77,7 @@ export const AdminCatalog = () => {
           </p>
         </div>
         
-        <Button size="lg" onClick={handleOpenAdd} className="font-bold flex items-center gap-2">
+        <Button size="lg" onClick={handleOpenAdd} className="flex items-center gap-2">
           <Plus className="h-5 w-5" /> Adicionar Lata
         </Button>
       </div>
