@@ -4,11 +4,12 @@ import { useAppData } from "../context/AppDataContext";
 import { useAuth } from "../context/AuthContext";
 import { CanCard } from "../components/CanCard";
 import { Button } from "../components/ui/Button";
-import { AchievementsCard } from "../components/AchievementsCard";
+import { FeaturedAchievementCard } from "../components/FeaturedAchievementCard";
 import { updateAchievementProgress } from "../lib/achievementsApi";
 import { UserCheck, Shield, Camera, Trash2, Heart, X } from "lucide-react";
 import { ImageCropModal } from "../components/ImageCropModal";
 import toast from "react-hot-toast";
+import { getBadgeInfo } from "../lib/badgeUtils";
 
 export const Profile = () => {
   const { username } = useParams();
@@ -27,7 +28,8 @@ export const Profile = () => {
   // MOCK: Generate a deterministic mock user profile for any username
   const mockCollectionCount = (username.length * 7) % monsters.length || 5;
   const mockCollection = monsters.slice(0, mockCollectionCount);
-  const pct = Math.round((mockCollectionCount / monsters.length) * 100);
+  const userCanCount = isOwner && user ? user.collection.length : mockCollectionCount;
+  const badgeInfo = getBadgeInfo(userCanCount);
 
   const displayFavorites = isOwner 
     ? (user?.favorites || []).map(id => monsters.find(m => m.id === id)).filter(Boolean)
@@ -156,9 +158,9 @@ export const Profile = () => {
                {username}
              </h1>
              <p className="text-gray-400 font-bold uppercase tracking-widest text-sm flex gap-4">
-               <span>Progresso Real: <span className="text-monster-neon">{pct}%</span></span>
+               <span>Progresso Real: <span className="text-monster-neon">{userCanCount > 0 && badgeInfo ? badgeInfo.name : "Nenhum"}</span></span>
                <span>•</span>
-               <span>Latas: {mockCollectionCount}</span>
+               <span>Latas: {userCanCount}</span>
              </p>
           </div>
           
@@ -178,9 +180,13 @@ export const Profile = () => {
           </div>
         </div>
 
-        {/* Public Achievements Board */}
-        <div className="mb-16">
-          <AchievementsCard userId={isOwner ? user.id : `mock-${username}`} isOwner={isOwner} />
+        {/* Featured Achievement */}
+        <div className="mb-16 max-w-sm">
+          <FeaturedAchievementCard 
+            userId={isOwner ? user.id : `mock-${username}`} 
+            username={username}
+            featuredId={isOwner ? user.featured_achievement_id : "a-first-blood"} 
+          />
         </div>
 
         {/* Favorite Showcase */}

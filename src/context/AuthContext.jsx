@@ -32,7 +32,8 @@ export const AuthProvider = ({ children }) => {
           avatarUrl: "",
           memberSince: "2024",
           collection: ["m-original-green", "m-ultra-white", "m-mango-loco", "m-ultra-fiesta", "m-reserve-watermelon"],
-          favorites: ["m-original-green", "m-mango-loco"]
+          favorites: ["m-original-green", "m-mango-loco"],
+          featured_achievement_id: null
         };
         setUser(mockUser);
         localStorage.setItem("monsterVault_user", JSON.stringify(mockUser));
@@ -138,8 +139,17 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const setFeaturedAchievement = (achievementId) => {
+    if (!user) return;
+    setUser(prev => {
+      const updatedUser = { ...prev, featured_achievement_id: achievementId };
+      localStorage.setItem("monsterVault_user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateCollection, toggleFavorite, updateUserProfileImage, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateCollection, toggleFavorite, updateUserProfileImage, setFeaturedAchievement, loading }}>
       {children}
     </AuthContext.Provider>
   );

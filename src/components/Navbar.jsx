@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
 import { Zap, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "./ui/Button";
+import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
@@ -15,7 +16,10 @@ export const Navbar = () => {
     navigate("/");
   };
 
-  const pct = user ? getUserPercentage(user.collection.length) : 0;
+  const userCanCount = user?.collection?.length || 0;
+  const badgeInfo = getBadgeInfo(userCanCount);
+  const badgeStyle = badgeInfo ? getBadgeStyle(badgeInfo.name) : null;
+  const progressBarWidth = Math.min((userCanCount / 500) * 100, 100);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-monster-neon/20 bg-monster-dark/80 backdrop-blur-md">
@@ -45,8 +49,43 @@ export const Navbar = () => {
                 <Link to={`/u/${user.username}`} className="text-sm font-bold hover:text-monster-neon transition-colors">
                   {user.username}
                 </Link>
-                <div className="text-xs text-monster-neon font-display tracking-widest">
-                  {pct}% Completado
+                <div className="mt-1 flex items-center justify-end h-5">
+                  {userCanCount > 0 && badgeInfo && badgeStyle ? (
+                    <div 
+                      className="inline-flex items-center gap-[6px] cursor-default"
+                      style={{ whiteSpace: "nowrap" }}
+                    >
+                      <div 
+                        className="font-display"
+                        style={{
+                          background: badgeStyle.bg,
+                          border: `1px solid ${badgeStyle.border}`,
+                          borderTop: `2px solid ${badgeStyle.accent}`,
+                          borderRadius: '4px',
+                          padding: '2px 6px',
+                          fontSize: '12px',
+                          fontWeight: 800,
+                          color: badgeStyle.accent,
+                          ...(badgeInfo.name === "Monstro" ? {
+                            boxShadow: `0 0 0 1px #00ff0033`,
+                            textShadow: `0 0 10px #00ff0088`
+                          } : {})
+                        }}
+                      >
+                        {badgeInfo.label}
+                      </div>
+                      <div 
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          color: badgeStyle.accent,
+                          opacity: 0.85
+                        }}
+                      >
+                        {badgeInfo.name}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <div 
@@ -80,7 +119,7 @@ export const Navbar = () => {
         <div className="w-full h-1 bg-monster-gray">
           <div 
             className="h-full bg-monster-neon transition-all duration-1000 ease-out glow-border" 
-            style={{ width: `${pct}%` }} 
+            style={{ width: `${progressBarWidth}%` }} 
           />
         </div>
       )}

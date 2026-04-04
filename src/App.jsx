@@ -8,6 +8,7 @@ import { Catalog } from './pages/Catalog';
 import { CanDetail } from './pages/CanDetail';
 import { Dashboard } from './pages/Dashboard';
 import { Profile } from './pages/Profile';
+import { UserAchievements } from './pages/UserAchievements';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { AdminRoute } from './components/AdminRoute';
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/catalog/:id" element={<CanDetail />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/u/:username" element={<Profile />} />
+                <Route path="/u/:username/achievements" element={<UserAchievements />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/admin/catalog" element={<AdminRoute><AdminCatalog /></AdminRoute>} />

@@ -4,7 +4,8 @@ import { useAppData } from "../context/AppDataContext";
 import { Link, Navigate } from "react-router-dom";
 import { CanCard } from "../components/CanCard";
 import { Trophy, Flame, Zap } from "lucide-react";
-import { AchievementsCard } from "../components/AchievementsCard";
+import { FeaturedAchievementCard } from "../components/FeaturedAchievementCard";
+import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
 
 const ENABLE_NEW_ACHIEVEMENTS = true;
 
@@ -16,7 +17,10 @@ export const Dashboard = () => {
     return <Navigate to="/login" />;
   }
 
-  const pct = getUserPercentage(user.collection.length);
+  const userCanCount = user.collection.length;
+  const badgeInfo = getBadgeInfo(userCanCount);
+  const badgeStyle = badgeInfo ? getBadgeStyle(badgeInfo.name) : null;
+  const progressBarWidth = Math.min((userCanCount / 500) * 100, 100);
   const missingCans = getMissingCans(user.collection).slice(0, 4); // Show 4 suggestions
 
   const ownedCans = user.collection.map(id => monsters.find(m => m.id === id)).filter(Boolean);
@@ -41,25 +45,18 @@ export const Dashboard = () => {
         <div className="w-full md:w-64">
            <div className="flex justify-between items-end mb-2 font-display uppercase tracking-widest">
              <span className="text-gray-400">Progresso</span>
-             <span className="text-3xl text-monster-neon glow-text">{pct}%</span>
+             <span className="text-2xl text-monster-neon glow-text">
+               {userCanCount > 0 && badgeInfo ? `${userCanCount} · ${badgeInfo.name}` : "0 latas"}
+             </span>
            </div>
            <div className="h-3 w-full bg-monster-dark border border-white/10">
-             <div className="h-full bg-monster-neon transition-all duration-1000" style={{ width: `${pct}%` }}/>
+             <div className="h-full bg-monster-neon transition-all duration-1000" style={{ width: `${progressBarWidth}%` }}/>
            </div>
         </div>
       </section>
 
-      {/* Trophies & Stats */}
-      <section className={`grid grid-cols-1 md:grid-cols-${ENABLE_NEW_ACHIEVEMENTS ? '2' : '3'} gap-6`}>
-        {!ENABLE_NEW_ACHIEVEMENTS && (
-          <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
-            <Trophy className="h-10 w-10 text-yellow-500" />
-            <div>
-              <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Conquistas</div>
-              <div className="text-2xl font-display text-white">3 Desbloqueadas</div>
-            </div>
-          </div>
-        )}
+      {/* Metrics & Trophies Grid */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
           <Flame className="h-10 w-10 text-monster-red" />
           <div>
@@ -74,14 +71,63 @@ export const Dashboard = () => {
             <div className="text-2xl font-display text-white">{monsters.length - user.collection.length}</div>
           </div>
         </div>
-      </section>
 
-      {/* New Achievements System */}
-      {ENABLE_NEW_ACHIEVEMENTS && (
-        <section>
-          <AchievementsCard userId={user.id} isOwner={true} />
-        </section>
-      )}
+        {/* Badge Card */}
+        <div className="bg-monster-gray/30 p-6 flex items-center justify-center clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
+          <div className="w-full flex flex-col justify-center">
+            <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Badge Atual</div>
+            {userCanCount > 0 && badgeInfo && badgeStyle ? (
+              <div 
+                className="w-full flex flex-col items-center justify-center text-center font-display"
+                style={{
+                  background: badgeStyle.bg,
+                  border: `1px solid ${badgeStyle.border}`,
+                  borderTop: `3px solid ${badgeStyle.accent}`,
+                  borderRadius: '6px',
+                  padding: '10px 12px',
+                  ...(badgeInfo.name === "Monstro" ? {
+                    boxShadow: `0 0 0 1px #00ff0033`
+                  } : {})
+                }}
+              >
+                <div 
+                  style={{
+                    fontSize: '28px',
+                    fontWeight: 800,
+                    lineHeight: '1',
+                    color: badgeStyle.accent,
+                    ...(badgeInfo.name === "Monstro" ? {
+                      textShadow: `0 0 10px #00ff0088`
+                    } : {})
+                  }}
+                >
+                  {badgeInfo.label}
+                </div>
+                <div 
+                  className="mt-1"
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: badgeStyle.accent,
+                    opacity: 0.8
+                  }}
+                >
+                  {badgeInfo.name}
+                </div>
+              </div>
+            ) : (
+              <div className="text-2xl font-display text-white">Nenhum</div>
+            )}
+          </div>
+        </div>
+        
+        {/* Featured Achievement Card */}
+        <FeaturedAchievementCard 
+          userId={user.id} 
+          username={user.username} 
+          featuredId={user.featured_achievement_id} 
+        />
+      </section>
 
       {/* Last Added */}
       {latestCans.length > 0 && (
