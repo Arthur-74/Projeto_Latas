@@ -73,18 +73,19 @@ export const Dashboard = () => {
         </div>
 
         {/* Badge Card */}
-        <div className="bg-monster-gray/30 p-6 flex items-center justify-center clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
+        <div 
+          className="bg-monster-gray/30 p-6 flex items-center justify-center clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors"
+          style={{ borderLeft: badgeStyle ? `4px solid ${badgeStyle.accent}` : '4px solid transparent' }}
+        >
           <div className="w-full flex flex-col justify-center">
             <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Badge Atual</div>
             {userCanCount > 0 && badgeInfo && badgeStyle ? (
               <div 
-                className="w-full flex flex-col items-center justify-center text-center font-display"
+                className="w-full flex items-center justify-start font-display clip-diagonal"
                 style={{
                   background: badgeStyle.bg,
-                  border: `1px solid ${badgeStyle.border}`,
-                  borderTop: `3px solid ${badgeStyle.accent}`,
-                  borderRadius: '6px',
-                  padding: '10px 12px',
+                  borderLeft: `4px solid ${badgeStyle.accent}`,
+                  padding: '10px 20px',
                   ...(badgeInfo.name === "Monstro" ? {
                     boxShadow: `0 0 0 1px #00ff0033`
                   } : {})
@@ -104,12 +105,12 @@ export const Dashboard = () => {
                   {badgeInfo.label}
                 </div>
                 <div 
-                  className="mt-1"
                   style={{
-                    fontSize: '12px',
+                    fontSize: '28px',
                     fontWeight: 600,
                     color: badgeStyle.accent,
-                    opacity: 0.8
+                    marginLeft: '10px',
+                    textTransform: 'uppercase'
                   }}
                 >
                   {badgeInfo.name}
