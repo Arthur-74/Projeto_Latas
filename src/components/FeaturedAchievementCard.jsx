@@ -31,26 +31,22 @@ export const FeaturedAchievementCard = ({ userId, username, featuredId }) => {
   return (
     <Link 
       to={`/u/${username}/achievements`}
-      className="bg-[#1c1c1c] p-6 flex flex-col justify-center clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors group cursor-pointer w-full"
+      className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors group cursor-pointer w-full"
     >
-      <div className="flex items-center gap-4 w-full">
-        <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 group-hover:border-yellow-500/50 transition-colors">
-          <Trophy className="w-10 h-10 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
+      <Trophy className="h-10 w-10 text-yellow-500 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <div className="text-gray-400 text-xs font-bold uppercase tracking-widest group-hover:text-monster-neon transition-colors">
+          Conquistas
         </div>
-        <div className="flex-1 overflow-hidden">
-          <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1 group-hover:text-yellow-500 transition-colors">
-            Conquistas
+        {featured ? (
+          <div className="text-2xl font-display text-white truncate">
+            {featured.name}
           </div>
-          {featured ? (
-            <div className="text-xl lg:text-2xl font-display text-white uppercase tracking-wider truncate leading-tight drop-shadow-sm">
-              {featured.name}
-            </div>
-          ) : (
-            <div className="text-sm font-bold text-gray-500 uppercase tracking-wide truncate">
-              Selecione uma conquista
-            </div>
-          )}
-        </div>
+        ) : (
+          <div className="text-sm font-bold text-gray-500 uppercase truncate">
+            Selecione uma conquista
+          </div>
+        )}
       </div>
     </Link>
   );
