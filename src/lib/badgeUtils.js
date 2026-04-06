@@ -1,27 +1,27 @@
+export const BADGE_THRESHOLDS = [
+  { count: 10000, name: "Monstro", label: "10K" },
+  { count: 9000, name: "Obsessão Total", label: "9K+" },
+  { count: 8000, name: "Rei da Coleção", label: "8K+" },
+  { count: 7000, name: "Patrimônio Cultural", label: "7K+" },
+  { count: 6000, name: "Lendário", label: "6K+" },
+  { count: 5000, name: "Museu Verde", label: "5K+" },
+  { count: 4000, name: "Curador", label: "4K+" },
+  { count: 3000, name: "Estoque Pessoal", label: "3K+" },
+  { count: 2000, name: "Garagem Cheia", label: "2K+" },
+  { count: 1000, name: "1K Monster", label: "1K+" },
+  { count: 500, name: "Meio Milhar", label: "500+" },
+  { count: 250, name: "Caçador de Edições", label: "250+" },
+  { count: 100, name: "Fã de Carteirinha", label: "100+" },
+  { count: 50, name: "Viciado", label: "50+" },
+  { count: 25, name: "Colecionador", label: "25+" },
+  { count: 10, name: "Iniciante", label: "10+" },
+  { count: 1, name: "Curioso", label: "1+" }
+];
+
 export const getBadgeInfo = (count) => {
   if (count <= 0) return null;
-  
-  const thresholds = [
-    { count: 10000, name: "Monstro", label: "10K" },
-    { count: 9000, name: "Obsessão Total", label: "9K+" },
-    { count: 8000, name: "Rei da Coleção", label: "8K+" },
-    { count: 7000, name: "Patrimônio Cultural", label: "7K+" },
-    { count: 6000, name: "Lendário", label: "6K+" },
-    { count: 5000, name: "Museu Verde", label: "5K+" },
-    { count: 4000, name: "Curador", label: "4K+" },
-    { count: 3000, name: "Estoque Pessoal", label: "3K+" },
-    { count: 2000, name: "Garagem Cheia", label: "2K+" },
-    { count: 1000, name: "1K Monster", label: "1K+" },
-    { count: 500, name: "Meio Milhar", label: "500+" },
-    { count: 250, name: "Caçador de Edições", label: "250+" },
-    { count: 100, name: "Fã de Carteirinha", label: "100+" },
-    { count: 50, name: "Viciado", label: "50+" },
-    { count: 25, name: "Colecionador", label: "25+" },
-    { count: 10, name: "Iniciante", label: "10+" },
-    { count: 1, name: "Curioso", label: "1+" }
-  ];
 
-  for (let t of thresholds) {
+  for (let t of BADGE_THRESHOLDS) {
     if (count >= t.count) {
       return { name: t.name, count: t.count, label: t.label };
     }
@@ -52,4 +52,12 @@ export const getBadgeStyle = (badgeName) => {
   };
 
   return styles[badgeName] || { bg: "#121212", border: "#2e2e2e", accent: "#ffffff" };
+};
+
+export const hexToRgba = (hex, alpha) => {
+  if (!hex || hex[0] !== '#') return `rgba(255, 255, 255, ${alpha})`;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };

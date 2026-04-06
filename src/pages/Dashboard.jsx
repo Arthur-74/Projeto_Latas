@@ -5,7 +5,8 @@ import { Link, Navigate } from "react-router-dom";
 import { CanCard } from "../components/CanCard";
 import { Trophy, Flame, Zap } from "lucide-react";
 import { FeaturedAchievementCard } from "../components/FeaturedAchievementCard";
-import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
+import { getBadgeInfo, getBadgeStyle, hexToRgba } from "../lib/badgeUtils";
+import { BADGE_ICONS } from "../lib/badgeIcons";
 
 const ENABLE_NEW_ACHIEVEMENTS = true;
 
@@ -74,52 +75,53 @@ export const Dashboard = () => {
 
         {/* Badge Card */}
         <div 
-          className="bg-monster-gray/30 p-6 flex items-center justify-center clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors"
+          className="bg-monster-gray/30 p-6 flex flex-col justify-center clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors"
           style={{ borderLeft: badgeStyle ? `4px solid ${badgeStyle.accent}` : '4px solid transparent' }}
         >
-          <div className="w-full flex flex-col justify-center">
-            <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Badge Atual</div>
-            {userCanCount > 0 && badgeInfo && badgeStyle ? (
+          <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Badge Atual</div>
+          {userCanCount > 0 && badgeInfo && badgeStyle ? (
+            <div 
+              className="w-full flex items-center justify-start font-display clip-diagonal"
+              style={{
+                background: hexToRgba(badgeStyle.accent, 0.05),
+                borderLeft: `4px solid ${badgeStyle.accent}`,
+                padding: '12px 20px',
+                ...(badgeInfo.name === "Monstro" ? {
+                  boxShadow: `0 0 0 1px #00ff0033`
+                } : {})
+              }}
+            >
+              {BADGE_ICONS[badgeInfo.name] && (
+                <div className="mr-3 filter drop-shadow-md shrink-0">
+                  {BADGE_ICONS[badgeInfo.name]}
+                </div>
+              )}
               <div 
-                className="w-full flex items-center justify-start font-display clip-diagonal"
+                className="text-2xl"
                 style={{
-                  background: badgeStyle.bg,
-                  borderLeft: `4px solid ${badgeStyle.accent}`,
-                  padding: '10px 20px',
+                  lineHeight: '1',
+                  color: badgeStyle.accent,
                   ...(badgeInfo.name === "Monstro" ? {
-                    boxShadow: `0 0 0 1px #00ff0033`
+                    textShadow: `0 0 10px #00ff0088`
                   } : {})
                 }}
               >
-                <div 
-                  style={{
-                    fontSize: '28px',
-                    fontWeight: 800,
-                    lineHeight: '1',
-                    color: badgeStyle.accent,
-                    ...(badgeInfo.name === "Monstro" ? {
-                      textShadow: `0 0 10px #00ff0088`
-                    } : {})
-                  }}
-                >
-                  {badgeInfo.label}
-                </div>
-                <div 
-                  style={{
-                    fontSize: '28px',
-                    fontWeight: 600,
-                    color: badgeStyle.accent,
-                    marginLeft: '10px',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {badgeInfo.name}
-                </div>
+                {badgeInfo.label}
               </div>
-            ) : (
-              <div className="text-2xl font-display text-white">Nenhum</div>
-            )}
-          </div>
+              <div 
+                className="text-2xl"
+                style={{
+                  color: badgeStyle.accent,
+                  marginLeft: '10px',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {badgeInfo.name}
+              </div>
+            </div>
+          ) : (
+            <div className="text-2xl font-display text-white">Nenhum</div>
+          )}
         </div>
         
         {/* Featured Achievement Card */}
