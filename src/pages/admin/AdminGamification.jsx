@@ -2,7 +2,7 @@ import React from "react";
 import { Shield, Target, Trophy } from "lucide-react";
 import { achievementsData } from "../../data/achievementsData";
 import { getBadgeStyle, BADGE_THRESHOLDS, hexToRgba } from "../../lib/badgeUtils";
-import { BADGE_ICONS } from "../../lib/badgeIcons";
+import { BADGE_ICONS, ACHIEVEMENT_ICONS, ACHIEVEMENT_COLORS } from "../../lib/badgeIcons";
 
 export const AdminGamification = () => {
 
@@ -27,7 +27,7 @@ export const AdminGamification = () => {
           </h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {/* We reverse thresholds so it starts from the lowest level (1) to the highest (10k) */}
           {[...BADGE_THRESHOLDS].reverse().map((badge, idx) => {
             const style = getBadgeStyle(badge.name);
@@ -36,44 +36,41 @@ export const AdminGamification = () => {
             return (
               <div 
                 key={badge.name}
-                className="bg-monster-gray/30 p-4 flex flex-col justify-center clip-diagonal border border-transparent hover:border-white/20 transition-colors"
-                style={{ borderLeft: `4px solid ${style.accent}` }}
+                className="p-6 flex flex-col justify-between clip-diagonal border border-transparent hover:brightness-110 transition-all"
+                style={{ 
+                  background: hexToRgba(style.accent, 0.05),
+                  borderLeft: `4px solid ${style.accent}`,
+                  ...(badge.name === "Monstro" ? { boxShadow: `0 0 0 1px #00ff0033` } : {})
+                }}
               >
-                <div className="w-full flex items-center justify-start font-display clip-diagonal"
-                  style={{
-                    background: hexToRgba(style.accent, 0.05),
-                    borderLeft: `4px solid ${style.accent}`,
-                    padding: '12px 20px',
-                    ...(badge.name === "Monstro" ? { boxShadow: `0 0 0 1px #00ff0033` } : {})
-                  }}
-                >
-                  {icon && (
-                    <div className="mr-3 filter drop-shadow-md shrink-0">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="shrink-0 flex items-center justify-center w-10 h-10">
+                    <div className="scale-[1.2] filter drop-shadow-md">
                       {icon}
                     </div>
-                  )}
-                  <div 
-                    className="text-2xl"
-                    style={{
-                      lineHeight: '1',
-                      color: style.accent,
-                      ...(badge.name === "Monstro" ? { textShadow: `0 0 10px #00ff0088` } : {})
-                    }}
-                  >
-                    {badge.label}
                   </div>
-                  <div 
-                    className="text-2xl"
-                    style={{
-                      color: style.accent,
-                      marginLeft: '10px',
-                      textTransform: 'uppercase'
-                    }}
-                  >
-                    {badge.name}
+
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div 
+                      className="text-xs font-bold uppercase tracking-widest transition-colors"
+                      style={{ color: style.accent }}
+                    >
+                      Badge
+                    </div>
+                    <div 
+                      className="text-2xl font-display truncate flex items-baseline gap-2"
+                      style={{
+                        color: style.accent,
+                        ...(badge.name === "Monstro" ? { textShadow: `0 0 10px #00ff0088` } : {})
+                      }}
+                    >
+                      <span>{badge.label}</span>
+                      <span className="uppercase">{badge.name}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+
+                <div className="mt-auto pt-4 border-t border-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
                   <Target className="w-4 h-4 text-gray-400" />
                   Alcançado ao cadastrar {badge.count} {badge.count === 1 ? 'lata' : 'latas'}
                 </div>
@@ -91,35 +88,62 @@ export const AdminGamification = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {achievementsData.map((ach, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {achievementsData.map((ach, idx) => {
+            const iconColor = ACHIEVEMENT_COLORS[ach.name] || "#ffffff";
+            const svgIcon = ACHIEVEMENT_ICONS[ach.name];
+
+            return (
             <div 
               key={`admin-ach-${ach.id}`}
-              className="relative p-6 flex flex-col clip-diagonal border border-white/10 bg-[#1c1c1c] transition-all"
+              className="relative p-6 flex flex-col clip-diagonal border-t border-r border-b transition-all"
+              style={{
+                borderLeft: `4px solid ${iconColor}`,
+                borderTopColor: 'transparent',
+                borderRightColor: 'transparent',
+                borderBottomColor: 'transparent',
+                background: hexToRgba(iconColor, 0.05)
+              }}
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="text-5xl filter drop-shadow-lg">{ach.icon || "🏆"}</div>
-                {ach.is_secret && (
-                  <div className="bg-purple-500/20 text-purple-400 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border border-purple-500/30">
-                    Secreta
+              <div className="flex items-center gap-4 mb-4">
+                <div className="shrink-0 flex items-center justify-center w-10 h-10">
+                  <div className="scale-[1.2] filter drop-shadow-md">
+                    {svgIcon ? svgIcon : <span className="text-3xl">{ach.icon || "🏆"}</span>}
                   </div>
-                )}
+                </div>
+
+                <div className="flex-1 min-w-0 flex flex-col justify-center relative">
+                  {ach.is_secret && (
+                    <div className="absolute top-0 right-0 bg-purple-500/20 text-purple-400 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border border-purple-500/30">
+                      Secreta
+                    </div>
+                  )}
+                  <div 
+                    className="text-xs font-bold uppercase tracking-widest transition-colors pr-16"
+                    style={{ color: iconColor }}
+                  >
+                    Conquista
+                  </div>
+                  <div 
+                    className="text-2xl font-display truncate flex items-baseline gap-2"
+                    style={{ color: iconColor }}
+                  >
+                    <span className="uppercase">{ach.name}</span>
+                  </div>
+                </div>
               </div>
               
-              <h3 className="text-xl font-display uppercase text-white mb-2 leading-tight">
-                {ach.name}
-              </h3>
-              
-              <p className="text-sm text-gray-400 mb-6 flex-1">
+              <p className="pt-0 pb-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
                 {ach.description}
               </p>
               
-              <div className="mt-auto pt-4 border-t border-white/5 flex justify-between items-center text-[10px] font-bold tracking-widest uppercase">
+              <div className="mt-auto pt-4 pb-2 border-t border-white/5 flex justify-between items-center text-[10px] font-bold tracking-widest uppercase">
                 <span className="text-monster-neon bg-monster-neon/10 px-2 py-1 rounded">+{ach.xp_reward} XP</span>
                 <span className="text-gray-500">Regra: {ach.condition_type} ({ach.condition_value})</span>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

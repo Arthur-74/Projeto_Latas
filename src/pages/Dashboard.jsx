@@ -75,53 +75,47 @@ export const Dashboard = () => {
 
         {/* Badge Card */}
         <div 
-          className="bg-monster-gray/30 p-6 flex flex-col justify-center clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors"
-          style={{ borderLeft: badgeStyle ? `4px solid ${badgeStyle.accent}` : '4px solid transparent' }}
+          className={`p-6 flex items-center gap-4 clip-diagonal border border-transparent transition-colors w-full ${!badgeInfo ? 'bg-monster-gray/30 hover:border-monster-neon/50' : 'hover:brightness-110'}`}
+          style={{
+            ...(badgeInfo && badgeStyle ? {
+              background: hexToRgba(badgeStyle.accent, 0.05),
+              borderLeft: `4px solid ${badgeStyle.accent}`,
+              ...(badgeInfo.name === "Monstro" ? { boxShadow: `0 0 0 1px #00ff0033` } : {})
+            } : {})
+          }}
         >
-          <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Badge Atual</div>
-          {userCanCount > 0 && badgeInfo && badgeStyle ? (
+          <div className="shrink-0 flex items-center justify-center w-10 h-10">
+            {badgeInfo && badgeStyle ? (
+              <div className="scale-[1.2] filter drop-shadow-md">
+                {BADGE_ICONS[badgeInfo.name]}
+              </div>
+            ) : (
+              <Trophy className="h-10 w-10 text-gray-500" />
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
             <div 
-              className="w-full flex items-center justify-start font-display clip-diagonal"
-              style={{
-                background: hexToRgba(badgeStyle.accent, 0.05),
-                borderLeft: `4px solid ${badgeStyle.accent}`,
-                padding: '12px 20px',
-                ...(badgeInfo.name === "Monstro" ? {
-                  boxShadow: `0 0 0 1px #00ff0033`
-                } : {})
-              }}
+              className="text-xs font-bold uppercase tracking-widest transition-colors"
+              style={{ color: badgeStyle ? badgeStyle.accent : "#9ca3af" }}
             >
-              {BADGE_ICONS[badgeInfo.name] && (
-                <div className="mr-3 filter drop-shadow-md shrink-0">
-                  {BADGE_ICONS[badgeInfo.name]}
-                </div>
-              )}
-              <div 
-                className="text-2xl"
-                style={{
-                  lineHeight: '1',
-                  color: badgeStyle.accent,
-                  ...(badgeInfo.name === "Monstro" ? {
-                    textShadow: `0 0 10px #00ff0088`
-                  } : {})
-                }}
-              >
-                {badgeInfo.label}
-              </div>
-              <div 
-                className="text-2xl"
-                style={{
-                  color: badgeStyle.accent,
-                  marginLeft: '10px',
-                  textTransform: 'uppercase'
-                }}
-              >
-                {badgeInfo.name}
-              </div>
+              Badge Atual
             </div>
-          ) : (
-            <div className="text-2xl font-display text-white">Nenhum</div>
-          )}
+            {userCanCount > 0 && badgeInfo && badgeStyle ? (
+              <div 
+                className="text-2xl font-display truncate flex items-baseline gap-2"
+                style={{
+                  color: badgeStyle.accent,
+                  ...(badgeInfo.name === "Monstro" ? { textShadow: `0 0 10px #00ff0088` } : {})
+                }}
+              >
+                <span>{badgeInfo.label}</span>
+                <span className="uppercase">{badgeInfo.name}</span>
+              </div>
+            ) : (
+              <div className="text-2xl font-display text-white mt-1">Nenhum</div>
+            )}
+          </div>
         </div>
         
         {/* Featured Achievement Card */}

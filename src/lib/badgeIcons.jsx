@@ -115,3 +115,121 @@ export const BADGE_ICONS = {
     </svg>
   )
 };
+
+export const ACHIEVEMENT_ICONS = {
+  "Primeira lata": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="10" y="6" width="16" height="24" rx="4" stroke="#ff4444" strokeWidth="2" />
+      <ellipse cx="18" cy="6" rx="8" ry="3" stroke="#ff4444" strokeWidth="2" />
+      <ellipse cx="18" cy="30" rx="8" ry="3" stroke="#ff4444" strokeWidth="2" />
+      <line x1="10" y1="12" x2="26" y2="12" stroke="#ff4444" strokeWidth="1.5" opacity=".45" />
+      <line x1="10" y1="24" x2="26" y2="24" stroke="#ff4444" strokeWidth="1.5" opacity=".45" />
+      <rect x="14" y="15" width="8" height="6" rx="1.5" stroke="#ff4444" strokeWidth="1.5" fill="#ff4444" fillOpacity=".2" />
+    </svg>
+  ),
+  "Trio de sabores": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 22 Q7 14 11 11 Q15 8 15 14 Q15 20 7 22 Z" stroke="#44dd88" strokeWidth="2" />
+      <path d="M21 22 Q21 14 25 11 Q29 8 29 14 Q29 20 21 22 Z" stroke="#44dd88" strokeWidth="2" />
+      <path d="M14 31 Q14 24 18 21 Q22 18 22 25 Q22 31 14 31 Z" stroke="#44dd88" strokeWidth="2" fill="#44dd88" fillOpacity=".2" />
+    </svg>
+  ),
+  "Caçador de latas": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="18" r="11" stroke="#00d4ff" strokeWidth="2" />
+      <circle cx="18" cy="18" r="6" stroke="#00d4ff" strokeWidth="1.5" />
+      <circle cx="18" cy="18" r="2.5" fill="#00d4ff" />
+      <line x1="18" y1="4" x2="18" y2="8" stroke="#00d4ff" strokeWidth="2" />
+      <line x1="18" y1="28" x2="18" y2="32" stroke="#00d4ff" strokeWidth="2" />
+      <line x1="4" y1="18" x2="8" y2="18" stroke="#00d4ff" strokeWidth="2" />
+      <line x1="28" y1="18" x2="32" y2="18" stroke="#00d4ff" strokeWidth="2" />
+    </svg>
+  ),
+  "Edição limitada": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 4 L30 14 L18 34 L6 14 Z" stroke="#ffd700" strokeWidth="2" fill="#ffd700" fillOpacity=".15" />
+      <path d="M6 14 L18 14 L30 14" stroke="#ffd700" strokeWidth="1.5" opacity=".5" />
+      <path d="M12 8 L18 14 L24 8" stroke="#ffd700" strokeWidth="1.5" opacity=".5" />
+    </svg>
+  ),
+  "Monstro social": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="7" r="4" stroke="#a855f7" strokeWidth="2" />
+      <circle cx="6" cy="28" r="4" stroke="#a855f7" strokeWidth="2" />
+      <circle cx="30" cy="28" r="4" stroke="#a855f7" strokeWidth="2" />
+      <line x1="18" y1="11" x2="10" y2="24" stroke="#a855f7" strokeWidth="2" />
+      <line x1="18" y1="11" x2="26" y2="24" stroke="#a855f7" strokeWidth="2" />
+      <line x1="10" y1="24" x2="26" y2="24" stroke="#a855f7" strokeWidth="1.5" opacity=".5" />
+    </svg>
+  ),
+  "Influenciador": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="19" x2="18" y2="33" stroke="#00ffcc" strokeWidth="2" />
+      <path d="M13 31 L18 33 L23 31" stroke="#00ffcc" strokeWidth="2" />
+      <path d="M12 16 Q12 10 18 10 Q24 10 24 16" stroke="#00ffcc" strokeWidth="2" fill="none" />
+      <path d="M7 12 Q7 4 18 4 Q29 4 29 12" stroke="#00ffcc" strokeWidth="2" fill="none" opacity=".45" />
+      <circle cx="18" cy="19" r="3" stroke="#00ffcc" strokeWidth="2" />
+    </svg>
+  ),
+  "Lata fantasma": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 32 L8 16 Q8 6 18 6 Q28 6 28 16 L28 32 L24 28 L21 32 L18 28 L15 32 L12 28 Z" stroke="#c0c0c0" strokeWidth="2" fill="#c0c0c0" fillOpacity=".1" />
+      <circle cx="14" cy="18" r="2.5" fill="#c0c0c0" fillOpacity=".6" />
+      <circle cx="22" cy="18" r="2.5" fill="#c0c0c0" fillOpacity=".6" />
+      <path d="M14 24 Q18 27 22 24" stroke="#c0c0c0" strokeWidth="1.5" fill="none" />
+    </svg>
+  ),
+  "Colecionador lendário": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 6 L24 6 L24 20 Q24 28 18 28 Q12 28 12 20 Z" stroke="#ffb700" strokeWidth="2" fill="#ffb700" fillOpacity=".15" />
+      <path d="M6 8 L12 8 L12 16 Q6 16 6 10 Z" stroke="#ffb700" strokeWidth="2" fill="none" />
+      <path d="M30 8 L24 8 L24 16 Q30 16 30 10 Z" stroke="#ffb700" strokeWidth="2" fill="none" />
+      <line x1="15" y1="28" x2="15" y2="32" stroke="#ffb700" strokeWidth="2" />
+      <line x1="21" y1="28" x2="21" y2="32" stroke="#ffb700" strokeWidth="2" />
+      <line x1="11" y1="32" x2="25" y2="32" stroke="#ffb700" strokeWidth="2" />
+    </svg>
+  ),
+  "Troca de latas": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 18 Q8 9 18 9 L26 9" stroke="#4d7cff" strokeWidth="2" fill="none" />
+      <path d="M22 5 L26 9 L22 13" stroke="#4d7cff" strokeWidth="2" fill="none" />
+      <path d="M28 18 Q28 27 18 27 L10 27" stroke="#4d7cff" strokeWidth="2" fill="none" />
+      <path d="M14 23 L10 27 L14 31" stroke="#4d7cff" strokeWidth="2" fill="none" />
+    </svg>
+  ),
+  "Energizado": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 3 L9 20 L17 20 L15 33 L27 16 L19 16 Z" stroke="#ff6b00" strokeWidth="2" fill="#ff6b00" fillOpacity=".2" />
+    </svg>
+  ),
+  "Ultra rara": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 3 L26 13 L18 34 L10 13 Z" stroke="#00d4ff" strokeWidth="2" fill="#00d4ff" fillOpacity=".12" />
+      <path d="M10 13 L18 13 L26 13" stroke="#00d4ff" strokeWidth="1.5" opacity=".5" />
+      <path d="M13 7 L18 13 L23 7" stroke="#00d4ff" strokeWidth="1.5" opacity=".5" />
+    </svg>
+  ),
+  "Atlas do Monster": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="18" r="13" stroke="#44dd88" strokeWidth="2" />
+      <ellipse cx="18" cy="18" rx="6" ry="13" stroke="#44dd88" strokeWidth="1.5" opacity=".6" />
+      <line x1="5" y1="13" x2="31" y2="13" stroke="#44dd88" strokeWidth="1.5" opacity=".45" />
+      <line x1="5" y1="23" x2="31" y2="23" stroke="#44dd88" strokeWidth="1.5" opacity=".45" />
+    </svg>
+  )
+};
+
+export const ACHIEVEMENT_COLORS = {
+  "Primeira lata": "#ff4444",
+  "Trio de sabores": "#44dd88",
+  "Caçador de latas": "#00d4ff",
+  "Edição limitada": "#ffd700",
+  "Monstro social": "#a855f7",
+  "Influenciador": "#00ffcc",
+  "Lata fantasma": "#c0c0c0",
+  "Colecionador lendário": "#ffb700",
+  "Troca de latas": "#4d7cff",
+  "Energizado": "#ff6b00",
+  "Ultra rara": "#00d4ff",
+  "Atlas do Monster": "#44dd88"
+};
