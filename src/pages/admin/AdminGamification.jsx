@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Shield, Target, Trophy } from "lucide-react";
 import { achievementsData } from "../../data/achievementsData";
 import { getBadgeStyle, BADGE_THRESHOLDS, hexToRgba } from "../../lib/badgeUtils";
 import { BADGE_ICONS, ACHIEVEMENT_ICONS, ACHIEVEMENT_COLORS } from "../../lib/badgeIcons";
+import { getDisabledAchievements, toggleAchievementStatus } from "../../lib/achievementsApi";
 
 export const AdminGamification = () => {
+  const [disabledIds, setDisabledIds] = useState(getDisabledAchievements());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setDisabledIds(getDisabledAchievements());
+    };
+    window.addEventListener('achievements-updated', handleUpdate);
+    return () => window.removeEventListener('achievements-updated', handleUpdate);
+  }, []);
+
+  const handleToggle = (id) => {
+    toggleAchievementStatus(id);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -92,17 +106,18 @@ export const AdminGamification = () => {
           {achievementsData.map((ach, idx) => {
             const iconColor = ACHIEVEMENT_COLORS[ach.name] || "#ffffff";
             const svgIcon = ACHIEVEMENT_ICONS[ach.name];
+            const isDisabled = disabledIds.includes(ach.id);
 
             return (
             <div 
               key={`admin-ach-${ach.id}`}
-              className="relative p-6 flex flex-col clip-diagonal border-t border-r border-b transition-all"
+              className={`relative p-6 flex flex-col clip-diagonal border-t border-r border-b transition-all ${isDisabled ? 'grayscale opacity-50' : ''}`}
               style={{
-                borderLeft: `4px solid ${iconColor}`,
+                borderLeft: `4px solid ${isDisabled ? '#666' : iconColor}`,
                 borderTopColor: 'transparent',
                 borderRightColor: 'transparent',
                 borderBottomColor: 'transparent',
-                background: hexToRgba(iconColor, 0.05)
+                background: hexToRgba(isDisabled ? '#666' : iconColor, 0.05)
               }}
             >
               <div className="flex items-center gap-4 mb-4">
@@ -112,21 +127,36 @@ export const AdminGamification = () => {
                   </div>
                 </div>
 
-                <div className="flex-1 min-w-0 flex flex-col justify-center relative">
-                  {ach.is_secret && (
-                    <div className="absolute top-0 right-0 bg-purple-500/20 text-purple-400 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border border-purple-500/30">
-                      Secreta
-                    </div>
-                  )}
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  
+                  {/* Action Buttons Top Right */}
+                  <div className="absolute top-0 right-0 flex flex-col items-end gap-2 z-10 m-2">
+                    <button
+                      onClick={() => handleToggle(ach.id)}
+                      className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 flex items-center shadow-[0_0_10px_rgba(0,0,0,0.5)] clip-diagonal-btn transition-colors ${
+                        isDisabled 
+                        ? 'bg-green-500/20 text-green-500 border border-green-500/50 hover:bg-green-500 hover:text-black' 
+                        : 'bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500 hover:text-black'
+                      }`}
+                    >
+                      {isDisabled ? 'Ativar' : 'Desativar'}
+                    </button>
+                    {ach.is_secret && (
+                      <div className="bg-purple-500/20 text-purple-400 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border border-purple-500/30">
+                        Secreta
+                      </div>
+                    )}
+                  </div>
+
                   <div 
-                    className="text-xs font-bold uppercase tracking-widest transition-colors pr-16"
-                    style={{ color: iconColor }}
+                    className="text-xs font-bold uppercase tracking-widest transition-colors pr-24"
+                    style={{ color: isDisabled ? '#888' : iconColor }}
                   >
-                    Conquista
+                    Conquista {isDisabled && "- Desativada"}
                   </div>
                   <div 
-                    className="text-2xl font-display truncate flex items-baseline gap-2"
-                    style={{ color: iconColor }}
+                    className="text-2xl font-display truncate flex items-baseline gap-2 pr-24"
+                    style={{ color: isDisabled ? '#888' : iconColor }}
                   >
                     <span className="uppercase">{ach.name}</span>
                   </div>

@@ -3,6 +3,26 @@ import { achievementsData } from "../data/achievementsData";
 import toast from "react-hot-toast";
 
 const getStorageKey = (userId) => `monsterVault_achievements_${userId}`;
+const DISABLED_KEY = 'monsterVault_disabled_achievements';
+
+export const getDisabledAchievements = () => {
+  const data = localStorage.getItem(DISABLED_KEY);
+  return data ? JSON.parse(data) : [];
+};
+
+export const toggleAchievementStatus = (id) => {
+  let disabled = getDisabledAchievements();
+  if (disabled.includes(id)) {
+    disabled = disabled.filter(d => d !== id);
+  } else {
+    disabled.push(id);
+  }
+  localStorage.setItem(DISABLED_KEY, JSON.stringify(disabled));
+  
+  // Trigger update so users see the achievement disappear/appear in real time
+  window.dispatchEvent(new CustomEvent('achievements-updated'));
+  return disabled;
+};
 
 /**
  * Initializes or fetches a user's achievement data.
@@ -30,10 +50,14 @@ const saveUserData = (userId, data) => {
  */
 export const getUserAchievements = (userId, category = "todas") => {
   const userProgress = getUserData(userId);
+  const disabledIds = getDisabledAchievements();
   let xp = 0;
   let unlocked = 0;
 
-  let enrichedAchievements = achievementsData.map((achieve) => {
+  // Filter out disabled achievements before processing user metrics
+  const activeAchievementsData = achievementsData.filter(a => !disabledIds.includes(a.id));
+
+  let enrichedAchievements = activeAchievementsData.map((achieve) => {
     const progressRecord = userProgress.find(p => p.achievement_id === achieve.id) || { progress: 0, unlocked_at: null };
     const isUnlocked = !!progressRecord.unlocked_at;
     
@@ -87,7 +111,7 @@ export const getUserAchievements = (userId, category = "todas") => {
   return {
     summary: {
       unlocked,
-      total: achievementsData.length,
+      total: activeAchievementsData.length,
       xp,
       xp_next_level,
       level
@@ -118,8 +142,12 @@ export const syncUserAchievements = (user, monstersData) => {
 
   let changed = false;
   let newlyUnlocked = [];
+  const disabledIds = getDisabledAchievements();
 
   achievementsData.forEach(achieve => {
+    // Skip evaluating if it is disabled by admin
+    if (disabledIds.includes(achieve.id)) return;
+    
     // Only auto-sync collection-based achievements here
     if (achieve.condition_type in stats) {
        let progressRecord = userProgress.find(p => p.achievement_id === achieve.id);
@@ -181,9 +209,12 @@ export const updateAchievementProgress = (userId, conditionType, increment = 1) 
   const userProgress = getUserData(userId);
   let changed = false;
   let newlyUnlocked = [];
+  const disabledIds = getDisabledAchievements();
 
-  // Filter achievements that track this condition
-  const relevantAchievements = achievementsData.filter(a => a.condition_type === conditionType);
+  // Filter achievements that track this condition and are not disabled
+  const relevantAchievements = achievementsData.filter(a => 
+      a.condition_type === conditionType && !disabledIds.includes(a.id)
+  );
 
   relevantAchievements.forEach(achieve => {
     let progressRecord = userProgress.find(p => p.achievement_id === achieve.id);
