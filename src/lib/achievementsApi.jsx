@@ -97,7 +97,83 @@ export const getUserAchievements = (userId, category = "todas") => {
 };
 
 /**
- * Update progress for achievements matching the given condition_type.
+ * Dynamically synchronize the user's achievements based on their actual current collection.
+ * This guarantees proper locking if cans are removed.
+ */
+export const syncUserAchievements = (user, monstersData) => {
+  if (!user || !user.id || !monstersData) return;
+  const userProgress = getUserData(user.id);
+  
+  const userCans = user.collection.map(id => monstersData.find(m => m.id === id)).filter(Boolean);
+  
+  const stats = {
+     total_cans: user.collection.length,
+     unique_cans: new Set(user.collection).size, // normally unique but works
+     unique_flavors: new Set(userCans.map(c => c.flavor).filter(Boolean)).size,
+     countries_count: new Set(userCans.map(c => c.country).filter(Boolean)).size,
+     limited_edition: userCans.filter(c => c.edition_type?.toLowerCase().includes("limited")).length,
+     ultra_special_cans: userCans.filter(c => c.rarity?.toLowerCase().includes("ultra") || c.name.toLowerCase().includes("ultra")).length,
+     no_barcode_cans: userCans.filter(c => c.year < 2010).length,
+  };
+
+  let changed = false;
+  let newlyUnlocked = [];
+
+  achievementsData.forEach(achieve => {
+    // Only auto-sync collection-based achievements here
+    if (achieve.condition_type in stats) {
+       let progressRecord = userProgress.find(p => p.achievement_id === achieve.id);
+       if (!progressRecord) {
+         progressRecord = { achievement_id: achieve.id, progress: 0, unlocked_at: null };
+         userProgress.push(progressRecord);
+       }
+
+       const currentValue = stats[achieve.condition_type];
+       const displayProgress = Math.min(currentValue, achieve.condition_value);
+       
+       if (progressRecord.progress !== displayProgress) {
+         progressRecord.progress = displayProgress;
+         changed = true;
+       }
+
+       if (currentValue >= achieve.condition_value) {
+         // Is now unlocked
+         if (!progressRecord.unlocked_at) {
+           progressRecord.unlocked_at = new Date().toISOString();
+           changed = true;
+           newlyUnlocked.push(achieve);
+         }
+       } else {
+         // Has lost the requirement, lock it
+         if (progressRecord.unlocked_at) {
+           progressRecord.unlocked_at = null;
+           changed = true;
+         }
+       }
+    }
+  });
+
+  if (changed) {
+    saveUserData(user.id, userProgress);
+    window.dispatchEvent(new CustomEvent('achievements-updated', { detail: { userId: user.id } }));
+    
+    newlyUnlocked.forEach(achieve => {
+      toast.success(
+         <div className="flex items-center gap-3">
+            <span className="text-2xl">{achieve.icon || "🏆"}</span>
+            <div>
+               <p className="font-bold text-xs uppercase tracking-widest text-[#a0c040]">Conquista Desbloqueada!</p>
+               <p className="font-display">{achieve.name}</p>
+            </div>
+         </div>,
+         { duration: 5000, style: { background: '#1a2e0a', color: '#fff', border: '1px solid #a0c040' } }
+      );
+    });
+  }
+};
+
+/**
+ * Update progress for manual or miscellaneous achievements (like login_streak).
  */
 export const updateAchievementProgress = (userId, conditionType, increment = 1) => {
   if (!userId) return;

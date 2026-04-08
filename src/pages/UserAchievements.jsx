@@ -221,7 +221,7 @@ export const UserAchievements = () => {
                   </div>
                 </div>
                 
-                <p className="text-[10px] font-bold border border-white/10 text-gray-500 uppercase tracking-widest p-2 text-center mt-auto mb-2 bg-white/5">
+                <p className="text-[10px] font-bold border border-white/10 text-gray-500 uppercase tracking-widest p-2 text-center mt-auto mb-2 bg-white/5 clip-diagonal-btn">
                   Conquista Oculta
                 </p>
               </div>
