@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
-import { Zap, LogOut, User as UserIcon } from "lucide-react";
+import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
 
@@ -105,6 +105,9 @@ export const Navbar = () => {
                   <UserIcon className="h-4 w-4 text-monster-neon" />
                 )}
               </div>
+              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')} title="Configurações">
+                <SettingsIcon className="h-5 w-5 text-gray-400 hover:text-white transition-colors" />
+              </Button>
               <Button variant="ghost" size="icon" onClick={handleLogout} title="Sair">
                 <LogOut className="h-5 w-5" />
               </Button>

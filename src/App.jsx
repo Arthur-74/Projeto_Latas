@@ -14,6 +14,7 @@ import { Register } from './pages/Register';
 import { AdminRoute } from './components/AdminRoute';
 import { AdminCatalog } from './pages/admin/AdminCatalog';
 import { AdminGamification } from './pages/admin/AdminGamification';
+import { Settings } from './pages/Settings';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/u/:username/achievements" element={<UserAchievements />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="/admin/catalog" element={<AdminRoute><AdminCatalog /></AdminRoute>} />
                 <Route path="/admin/gamification" element={<AdminRoute><AdminGamification /></AdminRoute>} />
               </Routes>

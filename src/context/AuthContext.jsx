@@ -27,6 +27,10 @@ export const AuthProvider = ({ children }) => {
         const mockUser = {
           id: email === "admin@monster.com" ? "u-admin" : "u-1234",
           username: email === "admin@monster.com" ? "Vault_Admin" : "monster_collector",
+          displayName: email === "admin@monster.com" ? "Administrador" : "Monster Collector",
+          email,
+          password: "monster123", // default mock password for settings test
+          username_changed_at: null,
           email,
           role,
           avatarUrl: "",
@@ -130,8 +134,17 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const updateUserData = (updates) => {
+    if (!user) return;
+    setUser(prev => {
+      const updatedUser = { ...prev, ...updates };
+      localStorage.setItem("monsterVault_user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateCollection, toggleFavorite, updateUserProfileImage, setFeaturedAchievement, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateCollection, toggleFavorite, updateUserProfileImage, setFeaturedAchievement, updateUserData, loading }}>
       {children}
     </AuthContext.Provider>
   );
