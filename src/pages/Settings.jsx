@@ -281,7 +281,7 @@ export const Settings = () => {
 
             {/* PERFIL */}
             {activeTab === "perfil" && (
-              <div className="max-w-xl animate-fade-in">
+              <div className="w-full animate-fade-in">
                 <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4 mb-8 uppercase tracking-widest">
                   Editar Perfil
                 </h2>
@@ -358,7 +358,7 @@ export const Settings = () => {
 
             {/* CONTA */}
             {activeTab === "conta" && (
-              <div className="max-w-xl animate-fade-in">
+              <div className="w-full animate-fade-in">
                 <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4 mb-8 uppercase tracking-widest">
                   Conta e Acesso
                 </h2>
@@ -400,7 +400,7 @@ export const Settings = () => {
 
             {/* SEGURANÇA */}
             {activeTab === "seguranca" && (
-              <div className="max-w-xl animate-fade-in">
+              <div className="w-full animate-fade-in">
                 <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4 mb-8 uppercase tracking-widest">
                   Alteração de Senha
                 </h2>
@@ -479,7 +479,7 @@ export const Settings = () => {
 
             {/* VERIFICAÇÃO */}
             {activeTab === "verificacao" && (
-              <div className="max-w-xl animate-fade-in">
+              <div className="w-full animate-fade-in">
                  <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4 mb-8 uppercase tracking-widest flex items-center gap-2">
                    Selo de Colecionador Verificado 
                  </h2>
