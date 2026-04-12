@@ -11,6 +11,7 @@ import { Profile } from './pages/Profile';
 import { UserAchievements } from './pages/UserAchievements';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { NotificationsPage } from './pages/Notifications';
 import { AdminRoute } from './components/AdminRoute';
 import { AdminCatalog } from './pages/admin/AdminCatalog';
 import { AdminGamification } from './pages/admin/AdminGamification';
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/admin/catalog" element={<AdminRoute><AdminCatalog /></AdminRoute>} />
                 <Route path="/admin/gamification" element={<AdminRoute><AdminGamification /></AdminRoute>} />
                 <Route path="/admin/verifications" element={<AdminRoute><AdminVerifications /></AdminRoute>} />

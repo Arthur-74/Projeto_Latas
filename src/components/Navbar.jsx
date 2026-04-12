@@ -137,26 +137,35 @@ export const Navbar = () => {
                        </div>
                        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
                          {notifications && notifications.length > 0 ? (
-                            notifications.map(n => (
-                              <div key={n.id} className={`p-4 border-b border-white/5 ${n.read ? 'opacity-50' : 'bg-white/5'} hover:bg-white/10 transition-colors relative group`}>
-                                 <div className="flex justify-between items-start mb-1">
-                                   <p className={`text-[10px] font-bold uppercase tracking-widest ${n.type === 'success' ? 'text-sky-400' : n.type === 'error' ? 'text-red-500' : n.type === 'warning' ? 'text-orange-500' : 'text-gray-400'}`}>
-                                      {n.type === 'success' ? 'Aprovado' : n.type === 'error' ? 'Reprovado' : n.type === 'warning' ? 'Revisão' : 'Info'}
-                                   </p>
-                                   {!n.read && (
-                                     <button 
-                                        onClick={() => markNotificationAsRead(n.id)}
-                                        className="text-gray-500 hover:text-white transition-colors p-1 opacity-0 group-hover:opacity-100 bg-[#1c1c1c]/80 clip-diagonal-btn"
-                                        title="Marcar como lida"
-                                     >
-                                        <Eye className="w-3.5 h-3.5" />
-                                     </button>
-                                   )}
-                                 </div>
-                                 <p className="text-sm text-gray-300 font-sans leading-relaxed pr-6">{n.message}</p>
-                                 <span className="text-[10px] text-gray-600 mt-2 block font-mono">{new Date(n.createdAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                              </div>
-                            ))
+                            <>
+                              {notifications.slice(0, 6).map(n => (
+                                <div key={n.id} className={`p-4 border-b border-white/5 ${n.read ? 'opacity-50' : 'bg-white/5'} hover:bg-white/10 transition-colors relative group`}>
+                                   <div className="flex justify-between items-start mb-1">
+                                     <p className={`text-[10px] font-bold uppercase tracking-widest ${n.type === 'success' ? 'text-sky-400' : n.type === 'error' ? 'text-red-500' : n.type === 'warning' ? 'text-orange-500' : 'text-gray-400'}`}>
+                                        {n.type === 'success' ? 'Aprovado' : n.type === 'error' ? 'Reprovado' : n.type === 'warning' ? 'Revisão' : 'Info'}
+                                     </p>
+                                     {!n.read && (
+                                       <button 
+                                          onClick={() => markNotificationAsRead(n.id)}
+                                          className="text-gray-500 hover:text-white transition-colors p-1 opacity-0 group-hover:opacity-100 bg-[#1c1c1c]/80 clip-diagonal-btn"
+                                          title="Marcar como lida"
+                                       >
+                                          <Eye className="w-3.5 h-3.5" />
+                                       </button>
+                                     )}
+                                   </div>
+                                   <p className="text-sm text-gray-300 font-sans leading-relaxed pr-6">{n.message}</p>
+                                   <span className="text-[10px] text-gray-600 mt-2 block font-mono">{new Date(n.createdAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
+                              ))}
+                              <Link 
+                                 to="/notifications" 
+                                 onClick={() => setShowNotifs(false)}
+                                 className="block w-full text-center p-3 text-[10px] font-bold text-gray-400 bg-white/5 hover:bg-monster-neon/20 hover:text-monster-neon uppercase tracking-widest transition-colors"
+                              >
+                                 Ver Todas as Notificações
+                              </Link>
+                            </>
                          ) : (
                             <div className="p-8 text-center text-gray-600 text-xs uppercase tracking-widest font-bold">Nenhuma notificação</div>
                          )}
