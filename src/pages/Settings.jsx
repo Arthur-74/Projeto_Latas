@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { User, Mail, Shield, CheckCircle, Save, AlertTriangle } from "lucide-react";
+import { User, Mail, Shield, CheckCircle, Save, AlertTriangle, UploadCloud, FileImage, X, Info, Clock, BadgeCheck } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import toast from "react-hot-toast";
 
@@ -48,6 +48,12 @@ export const Settings = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // Verificacao State
+  const [verificacaoDesc, setVerificacaoDesc] = useState("");
+  const [verificacaoFiles, setVerificacaoFiles] = useState([]);
+  const verifyFileRef = useRef(null);
+  const formStatus = user.isVerified ? "approved" : (user.verification_status === "pending" ? "pending" : "idle");
+
   // Handle Tab Switch
   const handleTabChange = (tabId) => {
     if (isDirty) {
@@ -67,6 +73,8 @@ export const Settings = () => {
     setOldPassword("");
     setNewPassword("");
     setConfirmPassword("");
+    setVerificacaoDesc("");
+    setVerificacaoFiles([]);
   };
 
   // Profile Handlers
@@ -181,6 +189,36 @@ export const Settings = () => {
     setConfirmPassword("");
     setIsDirty(false);
     toast.success("Senha atualizada com sucesso!");
+  };
+
+  // Verificacao Handlers
+  const handleVerifyFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files).map(f => ({ name: f.name, size: (f.size / 1024 / 1024).toFixed(2) }));
+      if (verificacaoFiles.length + newFiles.length > 5) {
+         toast.error("Você pode anexar no máximo 5 mídias.");
+         return;
+      }
+      setVerificacaoFiles(prev => [...prev, ...newFiles]);
+      setIsDirty(true);
+    }
+    // Clean input
+    if (verifyFileRef.current) verifyFileRef.current.value = "";
+  };
+  
+  const handleRemoveVerifyFile = (idx) => {
+    setVerificacaoFiles(prev => prev.filter((_, i) => i !== idx));
+    setIsDirty(true);
+  };
+
+  const handleSubmitVerification = () => {
+    if (verificacaoFiles.length === 0 || verificacaoDesc.trim().length === 0) {
+       toast.error("Anexe provas e digite uma descrição.");
+       return;
+    }
+    updateUserData({ verification_status: "pending" });
+    setIsDirty(false);
+    toast.success("Solicitação enviada! Previsão de análise: Até 72h.", { duration: 5000 });
   };
 
   // Layout Setup
@@ -427,17 +465,114 @@ export const Settings = () => {
 
             {/* VERIFICAÇÃO */}
             {activeTab === "verificacao" && (
-              <div className="h-full flex flex-col items-center justify-center animate-fade-in py-12">
-                 <Shield className="w-16 h-16 text-gray-700 mb-6" />
-                 <h2 className="text-2xl font-display text-white uppercase tracking-widest mb-4">
-                   Verificação de Perfil
+              <div className="max-w-xl animate-fade-in">
+                 <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4 mb-8 uppercase tracking-widest flex items-center gap-2">
+                   Selo de Colecionador Verificado 
                  </h2>
-                 <p className="text-gray-500 font-bold tracking-widest uppercase text-xs mb-8 text-center max-w-sm leading-relaxed">
-                   Obtenha um selo oficial atestando a autenticidade da sua coleção perante a comunidade.
-                 </p>
-                 <div className="bg-amber-500/10 border border-amber-500/50 text-amber-500 px-4 py-2 text-xs font-bold uppercase tracking-widest clip-diagonal-btn cursor-not-allowed">
-                   Em breve
-                 </div>
+
+                 {formStatus === "approved" && (
+                   <div className="flex flex-col items-center justify-center py-12 text-center bg-sky-500/10 border border-sky-500/30 clip-diagonal p-8 shadow-2xl">
+                     <BadgeCheck className="w-20 h-20 text-sky-500 mb-6 drop-shadow-[0_0_15px_rgba(14,165,233,0.5)]" />
+                     <h3 className="text-xl font-display uppercase tracking-widest text-sky-400 mb-2">Conta Oficial Verificada</h3>
+                     <p className="text-sky-500/70 text-sm font-bold tracking-widest uppercase leading-relaxed">
+                       Sua coleção e acervo documental atestaram sua autenticidade junto aos padrões da MonsterVault.
+                     </p>
+                   </div>
+                 )}
+
+                 {formStatus === "pending" && (
+                   <div className="flex flex-col items-center justify-center py-12 text-center bg-yellow-500/10 border border-yellow-500/30 clip-diagonal p-8 shadow-2xl">
+                     <Clock className="w-20 h-20 text-yellow-500 mb-6 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] animate-pulse" />
+                     <h3 className="text-xl font-display uppercase tracking-widest text-yellow-500 mb-2">Auditoria em Andamento</h3>
+                     <p className="text-yellow-500/70 text-sm font-bold tracking-widest uppercase leading-relaxed">
+                       A equipe curadora da MonsterVault está validando os artefatos enviados. O status de selagem acontecerá em breve.
+                     </p>
+                   </div>
+                 )}
+
+                 {formStatus === "idle" && (
+                   <div className="space-y-8 pb-8">
+                     {/* Orientacoes */}
+                     <div className="bg-[#121212] border-l-4 border-monster-neon p-6 relative shadow-lg">
+                       <div className="absolute top-0 right-0 p-2"><Info className="w-5 h-5 text-gray-600" /></div>
+                       <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Parâmetros de Aceitação</h3>
+                       <ul className="space-y-3 text-xs text-gray-400 font-sans leading-relaxed">
+                         <li><strong className="text-monster-neon font-display tracking-widest mr-1">Luz e Roteiro:</strong> Evite borrões. Fotografe tampas, lacres e selos nítidos em locais iluminados.</li>
+                         <li><strong className="text-monster-neon font-display tracking-widest mr-1">Raridades Absolutas:</strong> Latas "Ultra raras", ou fantasmas sem código requerem foto fechada na data do lote (metálico).</li>
+                         <li><strong className="text-monster-neon font-display tracking-widest mr-1">Dica de mestre:</strong> Vídeos curtos mapeando verticalmente suas prateleiras atestam originalidade e driblam fotos falsas da internet.</li>
+                       </ul>
+                     </div>
+
+                     {/* Form */}
+                     <div className="space-y-6">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Descrição Curatorial do Usuário</label>
+                          <textarea 
+                            value={verificacaoDesc}
+                            onChange={(e) => { setVerificacaoDesc(e.target.value); setIsDirty(true); }}
+                            className="w-full bg-[#121212] border border-white/10 text-white p-4 font-sans focus:outline-none focus:border-monster-neon transition-colors h-36 resize-none shadow-inner"
+                            placeholder="Descreva, em suas palavras, a vastidão da coleção e direcione nossa equipe nas mídias anexadas (ex: A imagem '02' é de uma Khaos que ganhei do meu pai em 2012)..." 
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex justify-between">
+                            Mídias Comprobatórias 
+                            <span className="text-monster-neon">{verificacaoFiles.length} / 5</span>
+                          </label>
+                          <div 
+                             onClick={() => verificacaoFiles.length < 5 && verifyFileRef.current?.click()}
+                             className={`w-full bg-[#161616] border-2 border-dashed border-white/10 transition-colors p-8 flex flex-col items-center justify-center group
+                               ${verificacaoFiles.length < 5 ? 'hover:border-monster-neon/50 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <UploadCloud className={`w-8 h-8 mb-2 transition-colors ${verificacaoFiles.length < 5 ? 'text-gray-600 group-hover:text-monster-neon' : 'text-gray-600'}`} />
+                            <span className={`text-xs text-gray-500 uppercase tracking-widest font-bold transition-colors ${verificacaoFiles.length < 5 ? 'group-hover:text-white' : ''}`}>
+                              {verificacaoFiles.length < 5 ? "Arraste ou clique no setor" : "Limite máximo atingido"}
+                            </span>
+                            <span className="text-[10px] text-gray-600 mt-1 uppercase tracking-widest">
+                               Até 50MB via JPG, WEBP, MP4
+                            </span>
+                          </div>
+                          <input 
+                            type="file" 
+                            multiple
+                            accept="image/*,video/*"
+                            ref={verifyFileRef}
+                            onChange={handleVerifyFileChange}
+                            className="hidden" 
+                          />
+                        </div>
+
+                        {/* File previews */}
+                        {verificacaoFiles.length > 0 && (
+                          <div className="bg-[#121212] p-4 border border-white/5 space-y-2 shadow-inner">
+                             {verificacaoFiles.map((f, i) => (
+                               <div key={i} className="flex justify-between items-center text-xs text-gray-400 font-mono py-1.5 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 transition-colors">
+                                 <div className="flex items-center gap-3">
+                                   <FileImage className="w-4 h-4 text-monster-neon shrink-0" />
+                                   <span className="truncate max-w-[200px] text-gray-300">{f.name}</span>
+                                   <span className="text-gray-600 tracking-widest font-bold">({f.size}MB)</span>
+                                 </div>
+                                 <button onClick={() => handleRemoveVerifyFile(i)} className="text-red-500 hover:text-red-400 p-1">
+                                    <X className="w-4 h-4 stroke-[3]" />
+                                 </button>
+                               </div>
+                             ))}
+                          </div>
+                        )}
+
+                        <div className="pt-6 border-t border-white/10">
+                          <Button 
+                            className="w-full h-12 uppercase tracking-[0.2em] font-black"
+                            disabled={verificacaoFiles.length === 0 || verificacaoDesc.trim().length === 0 || !isDirty}
+                            onClick={handleSubmitVerification}
+                          >
+                             Protocolar Carga probatória
+                          </Button>
+                        </div>
+                     </div>
+                   </div>
+                 )}
               </div>
             )}
 

@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
           email,
           password: "monster123", // default mock password for settings test
           username_changed_at: null,
+          isVerified: email === "verificado@monster.com",
           email,
           role,
           avatarUrl: "",

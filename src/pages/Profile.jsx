@@ -6,7 +6,7 @@ import { CanCard } from "../components/CanCard";
 import { Button } from "../components/ui/Button";
 import { FeaturedAchievementCard } from "../components/FeaturedAchievementCard";
 import { updateAchievementProgress } from "../lib/achievementsApi";
-import { UserCheck, Shield, Camera, Trash2, Heart, X } from "lucide-react";
+import { UserCheck, Shield, Camera, Trash2, Heart, X, BadgeCheck } from "lucide-react";
 import { ImageCropModal } from "../components/ImageCropModal";
 import toast from "react-hot-toast";
 import { getBadgeInfo } from "../lib/badgeUtils";
@@ -121,24 +121,32 @@ export const Profile = () => {
         <div className="flex flex-col md:flex-row items-end md:items-center gap-6 mb-12">
           
           <div 
-            className={`w-40 h-40 rounded-full border-4 border-monster-dark bg-monster-gray flex items-center justify-center glow-border shadow-2xl relative overflow-hidden ${isOwner ? "group cursor-pointer" : ""}`}
+            className={`w-40 h-40 rounded-full border-4 border-monster-dark bg-monster-gray flex items-center justify-center glow-border shadow-2xl relative ${isOwner ? "group cursor-pointer" : ""}`}
             onClick={() => isOwner && avatarInputRef.current.click()}
           >
              {displayAvatar ? (
-               <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" />
+               <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
              ) : (
                <span className="text-6xl font-display text-white uppercase">{username.charAt(0)}</span>
              )}
              
              {/* Badge Admin */}
-             {user?.role === "admin" && isOwner && (
-               <div className="absolute bottom-1 right-1 bg-monster-neon text-monster-dark p-1 rounded-full z-20">
-                 <Shield className="h-5 w-5" />
-               </div>
-             )}
+             {/* Badges do Avatar */}
+             <div className="absolute bottom-1 right-1 flex gap-1 z-20">
+               {user?.isVerified && isOwner && (
+                 <div className="text-white rounded-full shadow-lg" title="Conta Verificada">
+                   <BadgeCheck className="h-7 w-7 fill-sky-500 text-white" />
+                 </div>
+               )}
+               {user?.role === "admin" && isOwner && (
+                 <div className="bg-monster-neon text-monster-dark p-1 rounded-full shadow-lg" title="Administrador">
+                   <Shield className="h-5 w-5" />
+                 </div>
+               )}
+             </div>
 
              {isOwner && (
-               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity z-10">
+               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity z-10 rounded-full">
                  <Camera className="h-8 w-8 text-monster-neon mb-1 drop-shadow-[0_0_8px_#39ff14]" />
                  <span className="text-white font-display uppercase tracking-widest text-xs">Alterar Foto</span>
                  {displayAvatar && (

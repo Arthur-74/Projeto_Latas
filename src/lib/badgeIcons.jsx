@@ -189,12 +189,13 @@ export const ACHIEVEMENT_ICONS = {
       <line x1="11" y1="32" x2="25" y2="32" stroke="#ffb700" strokeWidth="2" />
     </svg>
   ),
-  "Troca de latas": (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 18 Q8 9 18 9 L26 9" stroke="#4d7cff" strokeWidth="2" fill="none" />
-      <path d="M22 5 L26 9 L22 13" stroke="#4d7cff" strokeWidth="2" fill="none" />
-      <path d="M28 18 Q28 27 18 27 L10 27" stroke="#4d7cff" strokeWidth="2" fill="none" />
-      <path d="M14 23 L10 27 L14 31" stroke="#4d7cff" strokeWidth="2" fill="none" />
+  "Verificado": (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+          d="M18 3 L21.5 6.5 L26.5 6 L28 10.8 L32.5 13.5 L31 18.5 L33.5 23 L30 26.5 L30 31.5 L25 31.5 L22 35 L18 33 L14 35 L11 31.5 L6 31.5 L6 26.5 L2.5 23 L5 18.5 L3.5 13.5 L8 10.8 L9.5 6 L14.5 6.5 Z"
+          stroke="#4d7cff" strokeWidth="2" strokeLinejoin="round" fill="#4d7cff" fillOpacity=".12" />
+      <path d="M11 18 L15.5 22.5 L25 13" stroke="#4d7cff" strokeWidth="2" transform="translate(0 2)"
+          strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   "Energizado": (
@@ -228,7 +229,7 @@ export const ACHIEVEMENT_COLORS = {
   "Influenciador": "#00ffcc",
   "Lata fantasma": "#c0c0c0",
   "Colecionador lendário": "#ffb700",
-  "Troca de latas": "#4d7cff",
+  "Verificado": "#4d7cff",
   "Energizado": "#ff6b00",
   "Ultra rara": "#00d4ff",
   "Atlas do Monster": "#44dd88"
