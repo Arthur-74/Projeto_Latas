@@ -13,6 +13,8 @@ export const AdminVerifications = () => {
   const [adminMemo, setAdminMemo] = useState("");
   const [showMemoPanel, setShowMemoPanel] = useState(null); // 'review' | 'rejected' | null
 
+  const [activeTab, setActiveTab] = useState("pending");
+
   useEffect(() => {
     loadData();
   }, []);
@@ -58,6 +60,8 @@ export const AdminVerifications = () => {
     }
   };
 
+  const filteredVerifications = verifications.filter(v => v.status === activeTab);
+
   return (
     <div className="flex-1 w-full flex flex-col md:flex-row h-full overflow-hidden bg-[#050505]">
       {/* Left panel - List */}
@@ -70,11 +74,18 @@ export const AdminVerifications = () => {
           <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Fila de Triagem</p>
         </div>
         
+        <div className="border-b border-white/5 bg-[#121212] overflow-x-auto flex flex-nowrap" style={{ scrollbarWidth: 'none' }}>
+           <button onClick={() => setActiveTab("pending")} className={`shrink-0 px-4 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${activeTab === 'pending' ? 'text-yellow-500 border-b-2 border-yellow-500 bg-white/5' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>Pendentes</button>
+           <button onClick={() => setActiveTab("review")} className={`shrink-0 px-4 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${activeTab === 'review' ? 'text-orange-500 border-b-2 border-orange-500 bg-white/5' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>Revisão</button>
+           <button onClick={() => setActiveTab("approved")} className={`shrink-0 px-4 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${activeTab === 'approved' ? 'text-sky-500 border-b-2 border-sky-500 bg-white/5' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>Aprovadas</button>
+           <button onClick={() => setActiveTab("rejected")} className={`shrink-0 px-4 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${activeTab === 'rejected' ? 'text-red-500 border-b-2 border-red-500 bg-white/5' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>Reprovadas</button>
+        </div>
+        
         <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ scrollbarWidth: 'none' }}>
-           {verifications.length === 0 ? (
-             <div className="text-center text-gray-600 text-xs font-bold uppercase mt-10">Nenhum pedido na fila.</div>
+           {filteredVerifications.length === 0 ? (
+             <div className="text-center text-gray-600 text-xs font-bold uppercase mt-10">Nenhuma da categoria.</div>
            ) : (
-              verifications.map((v) => (
+              filteredVerifications.map((v) => (
                 <div 
                   key={v.id} 
                   onClick={() => handleSelect(v)}
@@ -159,13 +170,13 @@ export const AdminVerifications = () => {
                                Veredito Curatorial
                              </h3>
                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                               <Button onClick={() => handleEvaluation("approved")} className="bg-sky-500 hover:bg-sky-400 text-black h-12 uppercase tracking-widest font-black">
+                               <Button onClick={() => handleEvaluation("approved")} className="bg-sky-500 hover:bg-sky-400 text-black h-12 uppercase tracking-widest">
                                   <CheckCircle className="w-4 h-4 mr-2" /> Aprovar Selo
                                </Button>
-                               <Button onClick={() => handleEvaluation("review")} className="bg-orange-500 hover:bg-orange-400 text-black h-12 uppercase tracking-widest font-black">
+                               <Button onClick={() => handleEvaluation("review")} className="bg-orange-500 hover:bg-orange-400 text-black h-12 uppercase tracking-widest">
                                   <AlertTriangle className="w-4 h-4 mr-2" /> Exigir Correção
                                </Button>
-                               <Button onClick={() => handleEvaluation("rejected")} className="bg-red-600 hover:bg-red-500 text-white h-12 uppercase tracking-widest font-black border-red-600">
+                               <Button onClick={() => handleEvaluation("rejected")} className="bg-red-600 hover:bg-red-500 text-white h-12 uppercase tracking-widest border-red-600">
                                   <XCircle className="w-4 h-4 mr-2" /> Reprovar
                                </Button>
                              </div>
@@ -204,9 +215,14 @@ export const AdminVerifications = () => {
                              "{selectedVerif.adminMessage}"
                           </div>
                         )}
-                        <p className="text-white font-bold uppercase tracking-widest text-sm text-center">
+                        <p className="text-white font-bold uppercase tracking-widest text-sm text-center mb-6">
                            Esta solicitação já encontra-se {selectedVerif.status === 'approved' ? 'APROVADA' : 'REPROVADA'}.
                         </p>
+                        <div className="flex justify-center border-t border-white/10 pt-6 mt-6">
+                           <Button variant="outline" onClick={() => handleEvaluation("pending")} className="text-yellow-500 border-yellow-500/50 hover:bg-yellow-500/10 uppercase tracking-widest text-xs h-10">
+                              <AlertCircle className="w-4 h-4 mr-2" /> Reabrir Processo (Revogar Status)
+                           </Button>
+                        </div>
                      </div>
                   )}
                </div>

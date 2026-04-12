@@ -138,6 +138,19 @@ export const Settings = () => {
 
   const cooldown = calculateCooldown();
 
+  const calculateVerificationCooldown = () => {
+     if (user.role === "admin") return { allowed: true };
+     if (user.verification_status !== "rejected" || !myVerificationObj || !myVerificationObj.evaluatedAt) return { allowed: true };
+     
+     const diff = (Date.now() - new Date(myVerificationObj.evaluatedAt).getTime()) / (1000 * 3600 * 24);
+     if (diff < 7) {
+        return { allowed: false, daysLeft: Math.ceil(7 - diff) };
+     }
+     return { allowed: true };
+  };
+
+  const verifCooldown = calculateVerificationCooldown();
+
   const handleSaveProfile = () => {
     if (username !== user.username) {
       // Must prompt modal
@@ -499,14 +512,24 @@ export const Settings = () => {
                        Sua coleção não atendeu aos requisitos mínimos. Resposta Oficial do Curador:
                      </p>
                      {myVerificationObj?.adminMessage && (
-                        <div className="bg-[#0a0a0a] border-l-4 border-l-red-500 p-4 text-left w-full">
+                        <div className="bg-[#0a0a0a] border-l-4 border-l-red-500 p-4 text-left w-full mb-6">
                            <p className="text-gray-300 font-sans italic">"{myVerificationObj.adminMessage}"</p>
                         </div>
+                     )}
+                     
+                     {!verifCooldown.allowed ? (
+                        <p className="text-red-500 text-xs font-bold uppercase tracking-widest bg-red-900/40 py-2 px-4 border border-red-500/50">
+                           Você poderá enviar um novo protocolo para análise em {verifCooldown.daysLeft} dias.
+                        </p>
+                     ) : (
+                        <p className="text-monster-neon text-xs font-bold uppercase tracking-widest mt-2">
+                           O prazo de carência expirou ou seu nível de acesso ignora regras. Você pode recorrer enviando uma nova carga probatória abaixo.
+                        </p>
                      )}
                    </div>
                  )}
 
-                 {(formStatus === "idle" || formStatus === "review") && (
+                 {(formStatus === "idle" || formStatus === "review" || (formStatus === "rejected" && verifCooldown.allowed)) && (
                    <div className="space-y-8 pb-8">
                      {formStatus === "review" && (
                        <div className="bg-orange-500/10 border border-orange-500/50 p-6 clip-diagonal shadow-2xl">
@@ -519,8 +542,19 @@ export const Settings = () => {
                          <div className="bg-[#0a0a0a] border-l-4 border-l-orange-500 p-4 mb-4">
                             <p className="text-gray-300 font-sans italic">"{myVerificationObj?.adminMessage}"</p>
                          </div>
-                         <p className="text-xs text-gray-500 uppercase font-bold tracking-widest mt-4">
-                           Por favor, reenvie o formulário com as adequações solicitadas.
+                         <p className="text-xs text-gray-400 font-sans leading-relaxed">
+                           Ao reenviar as informações abaixo, <strong className="text-monster-neon">seus novos textos e novas fotos serão anexados</strong> ao seu pedido original para continuação da investigação (histórico).
+                         </p>
+                       </div>
+                     )}
+                     
+                     {(formStatus === "rejected" && verifCooldown.allowed) && (
+                       <div className="bg-red-500/10 border border-red-500/50 p-6 clip-diagonal shadow-2xl mb-8">
+                         <h3 className="text-red-500 font-display uppercase tracking-widest text-lg mb-2 flex items-center gap-2">
+                           <XCircle className="w-5 h-5" /> Nova Submissão
+                         </h3>
+                         <p className="text-gray-400 text-xs font-sans leading-relaxed">
+                           Suas provas abaixo criarão um novo log que será <strong className="text-monster-neon">anexado ao final</strong> da petição que foi reprovada anteriormente, gerando uma trilha de auditoria completa para o avaliador. Capriche nas evidências.
                          </p>
                        </div>
                      )}

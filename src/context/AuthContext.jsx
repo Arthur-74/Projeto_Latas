@@ -192,22 +192,44 @@ export const AuthProvider = ({ children }) => {
     if (!user) return;
     let db = JSON.parse(localStorage.getItem("monsterVault_verifications") || "[]");
     
-    // Remove if previously existed
-    db = db.filter(v => v.userId !== user.id);
+    const existingIdx = db.findIndex(v => v.userId === user.id);
+    if (existingIdx !== -1) {
+       const existing = db[existingIdx];
+       if (existing.status === "review" || existing.status === "rejected") {
+           existing.desc = existing.desc + "\n\n[ATUALIZAÇÃO DE PROTOCOLO EM " + new Date().toLocaleString('pt-BR') + "]:\n" + desc;
+           existing.files = [...existing.files, ...files];
+           existing.status = "pending";
+           existing.adminMessage = null;
+           existing.submittedAt = new Date().toISOString();
+           db[existingIdx] = existing;
+       } else {
+           db = db.filter(v => v.userId !== user.id);
+           db.push({
+             id: `v-${Date.now()}`,
+             userId: user.id,
+             username: user.username,
+             avatarUrl: user.avatarUrl,
+             status: "pending", 
+             desc: `[PROTOCOLO INICIAL EM ${new Date().toLocaleString('pt-BR')}]:\n${desc}`,
+             files,
+             adminMessage: null,
+             submittedAt: new Date().toISOString()
+           });
+       }
+    } else {
+       db.push({
+         id: `v-${Date.now()}`,
+         userId: user.id,
+         username: user.username,
+         avatarUrl: user.avatarUrl,
+         status: "pending", 
+         desc: `[PROTOCOLO INICIAL EM ${new Date().toLocaleString('pt-BR')}]:\n${desc}`,
+         files,
+         adminMessage: null,
+         submittedAt: new Date().toISOString()
+       });
+    }
     
-    const newRecord = {
-      id: `v-${Date.now()}`,
-      userId: user.id,
-      username: user.username,
-      avatarUrl: user.avatarUrl,
-      status: "pending", 
-      desc,
-      files,
-      adminMessage: null,
-      submittedAt: new Date().toISOString()
-    };
-    
-    db.push(newRecord);
     localStorage.setItem("monsterVault_verifications", JSON.stringify(db));
     updateUserData({ verification_status: "pending" });
   };
@@ -223,6 +245,7 @@ export const AuthProvider = ({ children }) => {
      if (idx !== -1) {
         db[idx].status = status;
         db[idx].adminMessage = message;
+        db[idx].evaluatedAt = new Date().toISOString();
         localStorage.setItem("monsterVault_verifications", JSON.stringify(db));
      }
      
@@ -240,6 +263,9 @@ export const AuthProvider = ({ children }) => {
      } else if (status === "rejected") {
         notifType = "error";
         notifMessage = "Sua Verificação Oficial foi REPROVADA pela curadoria.";
+     } else if (status === "pending") {
+        notifType = "info";
+        notifMessage = "Seu protocolo de verificação foi reaberto e está novamente sob auditoria.";
      }
      
      const newNotif = {
@@ -258,6 +284,7 @@ export const AuthProvider = ({ children }) => {
         if (status === "approved") updateUserData({ isVerified: true, verification_status: "approved" });
         if (status === "review") updateUserData({ verification_status: "review" });
         if (status === "rejected") updateUserData({ verification_status: "rejected" });
+        if (status === "pending") updateUserData({ isVerified: false, verification_status: "pending" });
      }
   };
 
