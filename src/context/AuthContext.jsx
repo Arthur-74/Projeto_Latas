@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { updateAchievementProgress, syncUserAchievements } from "../lib/achievementsApi";
+import { updateAchievementProgress, syncUserAchievements, revokeAchievement } from "../lib/achievementsApi";
 import { monstersData } from "../data/monsters";
 
 const AuthContext = createContext();
@@ -35,6 +35,22 @@ export const AuthProvider = ({ children }) => {
       setNotifications(notifs);
     }
     setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const handleRelock = (e) => {
+       const { achievement_id } = e.detail;
+       setUser(prev => {
+          if (prev && prev.featured_achievement_id === achievement_id) {
+             const updated = { ...prev, featured_achievement_id: null };
+             localStorage.setItem("monsterVault_user", JSON.stringify(updated));
+             return updated;
+          }
+          return prev;
+       });
+    };
+    window.addEventListener('achievement-relocked', handleRelock);
+    return () => window.removeEventListener('achievement-relocked', handleRelock);
   }, []);
 
   const login = (email, password) => {
@@ -188,6 +204,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem(`monsterVault_notifications_${user.id}`, JSON.stringify(updated));
   };
 
+  const markNotificationAsRead = (id) => {
+    if (!user) return;
+    const updated = notifications.map(n => n.id === id ? { ...n, read: true } : n);
+    setNotifications(updated);
+    localStorage.setItem(`monsterVault_notifications_${user.id}`, JSON.stringify(updated));
+  };
+
   const submitVerification = (desc, files) => {
     if (!user) return;
     let db = JSON.parse(localStorage.getItem("monsterVault_verifications") || "[]");
@@ -257,15 +280,23 @@ export const AuthProvider = ({ children }) => {
      if (status === "approved") {
         notifType = "success";
         notifMessage = "Sua Verificação Oficial foi APROVADA! O selo já está ativo no seu perfil.";
+        
+        // Unlock Verified achievement instantly
+        setTimeout(() => {
+           updateAchievementProgress(targetUserId, "verified_account", 1);
+        }, 500);
      } else if (status === "review") {
         notifType = "warning";
         notifMessage = "Sua Verificação necessita de correções/ajustes. Acesse as Configurações parar ler o relatório do Admin.";
+        setTimeout(() => { revokeAchievement(targetUserId, "verified_account"); }, 500);
      } else if (status === "rejected") {
         notifType = "error";
         notifMessage = "Sua Verificação Oficial foi REPROVADA pela curadoria.";
+        setTimeout(() => { revokeAchievement(targetUserId, "verified_account"); }, 500);
      } else if (status === "pending") {
         notifType = "info";
         notifMessage = "Seu protocolo de verificação foi reaberto e está novamente sob auditoria.";
+        setTimeout(() => { revokeAchievement(targetUserId, "verified_account"); }, 500);
      }
      
      const newNotif = {
@@ -289,7 +320,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateCollection, toggleFavorite, updateUserProfileImage, setFeaturedAchievement, updateUserData, loading, notifications, markNotificationsAsRead, submitVerification, getAllVerifications, evaluateVerification }}>
+    <AuthContext.Provider value={{ user, login, logout, updateCollection, toggleFavorite, updateUserProfileImage, setFeaturedAchievement, updateUserData, loading, notifications, markNotificationsAsRead, markNotificationAsRead, submitVerification, getAllVerifications, evaluateVerification }}>
       {children}
     </AuthContext.Provider>
   );

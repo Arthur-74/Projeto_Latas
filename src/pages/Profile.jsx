@@ -35,6 +35,10 @@ export const Profile = () => {
     ? (user?.favorites || []).map(id => monsters.find(m => m.id === id)).filter(Boolean)
     : mockCollection.slice(0, 3); // mock some favorites for others
 
+  const displayCollection = isOwner && user 
+    ? user.collection.map(id => monsters.find(m => m.id === id)).filter(Boolean)
+    : mockCollection;
+
   // Use state or props depending if looking at self
   const displayAvatar = isOwner && user.avatarUrl ? user.avatarUrl : null;
   const displayBanner = isOwner && user.bannerUrl ? user.bannerUrl : null;
@@ -246,9 +250,13 @@ export const Profile = () => {
              <Link to="/catalog" className="text-sm uppercase tracking-widest font-bold text-gray-400 hover:text-monster-neon">Ver Catálogo</Link>
            </div>
            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-               {mockCollection.map(can => (
-                 <CanCard key={`all-${can.id}`} monster={can} />
-               ))}
+               {displayCollection.length === 0 ? (
+                 <div className="col-span-full text-center text-gray-500 font-bold uppercase tracking-widest py-8">Nenhuma lata na coleção.</div>
+               ) : (
+                 displayCollection.map(can => (
+                   <CanCard key={`all-${can.id}`} monster={can} />
+                 ))
+               )}
            </div>
         </div>
       </div>

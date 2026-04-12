@@ -1,6 +1,8 @@
 import React from "react";
 import { achievementsData } from "../data/achievementsData";
 import toast from "react-hot-toast";
+import { ACHIEVEMENT_ICONS, ACHIEVEMENT_COLORS } from "./badgeIcons";
+import { hexToRgba } from "./badgeUtils";
 
 const getStorageKey = (userId) => `monsterVault_achievements_${userId}`;
 const DISABLED_KEY = 'monsterVault_disabled_achievements';
@@ -176,6 +178,7 @@ export const syncUserAchievements = (user, monstersData) => {
          if (progressRecord.unlocked_at) {
            progressRecord.unlocked_at = null;
            changed = true;
+           window.dispatchEvent(new CustomEvent('achievement-relocked', { detail: { achievement_id: achieve.id } }));
          }
        }
     }
@@ -186,16 +189,37 @@ export const syncUserAchievements = (user, monstersData) => {
     window.dispatchEvent(new CustomEvent('achievements-updated', { detail: { userId: user.id } }));
     
     newlyUnlocked.forEach(achieve => {
-      toast.success(
-         <div className="flex items-center gap-3">
-            <span className="text-2xl">{achieve.icon || "🏆"}</span>
-            <div>
-               <p className="font-bold text-xs uppercase tracking-widest text-[#a0c040]">Conquista Desbloqueada!</p>
-               <p className="font-display">{achieve.name}</p>
-            </div>
-         </div>,
-         { duration: 5000, style: { background: '#1a2e0a', color: '#fff', border: '1px solid #a0c040' } }
-      );
+      const iconColor = ACHIEVEMENT_COLORS[achieve.name] || "#a0c040";
+      const svgIcon = ACHIEVEMENT_ICONS[achieve.name];
+      const bg = hexToRgba(iconColor, 0.15);
+
+      toast.custom((t) => (
+         <div 
+           className={`${t.visible ? 'animate-fade-in' : 'opacity-0'} 
+             max-w-sm w-full pointer-events-auto flex flex-col justify-center clip-diagonal border-t border-r border-b backdrop-blur-xl shadow-2xl transition-opacity duration-300`}
+           style={{ 
+             borderLeft: `4px solid ${iconColor}`,
+             borderTopColor: 'rgba(255,255,255,0.1)',
+             borderRightColor: 'rgba(255,255,255,0.1)',
+             borderBottomColor: 'rgba(255,255,255,0.1)',
+             background: 'rgba(10,10,10,0.95)',
+           }}
+         >
+           <div className="flex items-center gap-4 p-4" style={{ background: bg }}>
+             <div className="shrink-0 flex items-center justify-center w-12 h-12">
+               <div className="scale-[1.3] filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
+                 {svgIcon ? svgIcon : <span className="text-3xl">{achieve.icon || "🏆"}</span>}
+               </div>
+             </div>
+             <div className="flex-1 min-w-0 flex flex-col justify-center">
+               <p className="font-bold text-[9px] uppercase tracking-widest mb-1" style={{ color: iconColor }}>
+                  Nova Conquista Desbloqueada!
+               </p>
+               <p className="font-display text-xl uppercase text-white truncate leading-none">{achieve.name}</p>
+             </div>
+           </div>
+         </div>
+      ), { duration: 6000, position: 'bottom-right' });
     });
   }
 };
@@ -253,18 +277,66 @@ export const updateAchievementProgress = (userId, conditionType, increment = 1) 
 
     // Show toast for newly unlocked
     newlyUnlocked.forEach(achieve => {
-      toast.success(
-         <div className="flex items-center gap-3">
-            <span className="text-2xl">{achieve.icon || "🏆"}</span>
-            <div>
-               <p className="font-bold text-xs uppercase tracking-widest text-[#a0c040]">Conquista Desbloqueada!</p>
-               <p className="font-display">{achieve.name}</p>
-            </div>
-         </div>,
-         { duration: 5000, style: { background: '#1a2e0a', color: '#fff', border: '1px solid #a0c040' } }
-      );
+      const iconColor = ACHIEVEMENT_COLORS[achieve.name] || "#a0c040";
+      const svgIcon = ACHIEVEMENT_ICONS[achieve.name];
+      const bg = hexToRgba(iconColor, 0.15);
+
+      toast.custom((t) => (
+         <div 
+           className={`${t.visible ? 'animate-fade-in' : 'opacity-0'} 
+             max-w-sm w-full pointer-events-auto flex flex-col justify-center clip-diagonal border-t border-r border-b backdrop-blur-xl shadow-2xl transition-opacity duration-300`}
+           style={{ 
+             borderLeft: `4px solid ${iconColor}`,
+             borderTopColor: 'rgba(255,255,255,0.1)',
+             borderRightColor: 'rgba(255,255,255,0.1)',
+             borderBottomColor: 'rgba(255,255,255,0.1)',
+             background: 'rgba(10,10,10,0.95)',
+           }}
+         >
+           <div className="flex items-center gap-4 p-4" style={{ background: bg }}>
+             <div className="shrink-0 flex items-center justify-center w-12 h-12">
+               <div className="scale-[1.3] filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
+                 {svgIcon ? svgIcon : <span className="text-3xl">{achieve.icon || "🏆"}</span>}
+               </div>
+             </div>
+             <div className="flex-1 min-w-0 flex flex-col justify-center">
+               <p className="font-bold text-[9px] uppercase tracking-widest mb-1" style={{ color: iconColor }}>
+                  Nova Conquista Desbloqueada!
+               </p>
+               <p className="font-display text-xl uppercase text-white truncate leading-none">{achieve.name}</p>
+             </div>
+           </div>
+         </div>
+      ), { duration: 6000, position: 'bottom-right' });
     });
   }
 
   return { changed, newlyUnlocked };
+};
+
+/**
+ * Revoke an achievement that was previously unlocked manually.
+ */
+export const revokeAchievement = (userId, conditionType) => {
+  if (!userId) return;
+
+  const userProgress = getUserData(userId);
+  let changed = false;
+
+  const relevantAchievements = achievementsData.filter(a => a.condition_type === conditionType);
+
+  relevantAchievements.forEach(achieve => {
+    let progressRecord = userProgress.find(p => p.achievement_id === achieve.id);
+    if (progressRecord && progressRecord.unlocked_at) {
+      progressRecord.unlocked_at = null;
+      progressRecord.progress = 0;
+      changed = true;
+      window.dispatchEvent(new CustomEvent('achievement-relocked', { detail: { achievement_id: achieve.id } }));
+    }
+  });
+
+  if (changed) {
+    saveUserData(userId, userProgress);
+    window.dispatchEvent(new CustomEvent('achievements-updated', { detail: { userId } }));
+  }
 };

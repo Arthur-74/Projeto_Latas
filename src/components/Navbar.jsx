@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
-import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck } from "lucide-react";
+import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck, Eye } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
 
 export const Navbar = () => {
-  const { user, logout, notifications, markNotificationsAsRead } = useAuth();
+  const { user, logout, notifications, markNotificationsAsRead, markNotificationAsRead } = useAuth();
   const { getUserPercentage } = useAppData();
   const navigate = useNavigate();
   const [showNotifs, setShowNotifs] = useState(false);
@@ -112,29 +112,56 @@ export const Navbar = () => {
                 )}
               </div>
               {/* Notifications */}
-              <div className="relative">
-                <Button variant="ghost" size="icon" onClick={() => { setShowNotifs(!showNotifs); if(unreadCount > 0) markNotificationsAsRead(); }} title="Notificações">
+              <div 
+                 className="relative"
+                 onMouseEnter={() => setShowNotifs(true)}
+                 onMouseLeave={() => setShowNotifs(false)}
+              >
+                <Button variant="ghost" size="icon" title="Notificações" className="pointer-events-none">
                    <Bell className={`h-5 w-5 hover:text-white transition-colors ${unreadCount > 0 ? 'text-white' : 'text-gray-400'}`} />
                    {unreadCount > 0 && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full glow-border shadow-[0_0_8px_#ef4444]"></span>}
                 </Button>
                 {showNotifs && (
-                  <div className="absolute right-0 top-12 w-80 bg-[#121212] border border-white/10 shadow-2xl z-50 clip-diagonal flex flex-col max-h-96">
-                     <div className="p-4 border-b border-white/5 font-display uppercase tracking-widest text-sm text-white">Centro de Alertas</div>
-                     <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-                       {notifications && notifications.length > 0 ? (
-                          notifications.map(n => (
-                            <div key={n.id} className={`p-4 border-b border-white/5 ${n.read ? 'opacity-70' : 'bg-white/5'} hover:bg-white/10 transition-colors`}>
-                               <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${n.type === 'success' ? 'text-sky-400' : n.type === 'error' ? 'text-red-500' : n.type === 'warning' ? 'text-orange-500' : 'text-gray-400'}`}>
-                                  {n.type === 'success' ? 'Aprovado' : n.type === 'error' ? 'Reprovado' : n.type === 'warning' ? 'Revisão' : 'Info'}
-                               </p>
-                               <p className="text-sm text-gray-300 font-sans leading-relaxed">{n.message}</p>
-                               <span className="text-[10px] text-gray-600 mt-2 block font-mono">{new Date(n.createdAt).toLocaleDateString('pt-BR')}</span>
-                            </div>
-                          ))
-                       ) : (
-                          <div className="p-8 text-center text-gray-600 text-xs uppercase tracking-widest font-bold">Nenhuma notificação</div>
-                       )}
-                     </div>
+                  <div className="absolute right-0 top-full pt-2 z-50">
+                    <div className="w-80 bg-[#121212] border border-white/10 shadow-2xl clip-diagonal flex flex-col max-h-96">
+                       <div className="p-4 border-b border-white/5 font-display uppercase tracking-widest text-sm text-white flex justify-between items-center">
+                         <span>Centro de Alertas</span>
+                         {unreadCount > 0 && (
+                            <button 
+                               onClick={(e) => { e.stopPropagation(); markNotificationsAsRead(); }}
+                               className="text-[10px] bg-white/10 hover:bg-white/20 text-gray-300 py-1 px-2 uppercase transition-colors clip-diagonal-btn"
+                            >
+                               Ler Tudo
+                            </button>
+                         )}
+                       </div>
+                       <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+                         {notifications && notifications.length > 0 ? (
+                            notifications.map(n => (
+                              <div key={n.id} className={`p-4 border-b border-white/5 ${n.read ? 'opacity-50' : 'bg-white/5'} hover:bg-white/10 transition-colors relative group`}>
+                                 <div className="flex justify-between items-start mb-1">
+                                   <p className={`text-[10px] font-bold uppercase tracking-widest ${n.type === 'success' ? 'text-sky-400' : n.type === 'error' ? 'text-red-500' : n.type === 'warning' ? 'text-orange-500' : 'text-gray-400'}`}>
+                                      {n.type === 'success' ? 'Aprovado' : n.type === 'error' ? 'Reprovado' : n.type === 'warning' ? 'Revisão' : 'Info'}
+                                   </p>
+                                   {!n.read && (
+                                     <button 
+                                        onClick={() => markNotificationAsRead(n.id)}
+                                        className="text-gray-500 hover:text-white transition-colors p-1 opacity-0 group-hover:opacity-100 bg-[#1c1c1c]/80 clip-diagonal-btn"
+                                        title="Marcar como lida"
+                                     >
+                                        <Eye className="w-3.5 h-3.5" />
+                                     </button>
+                                   )}
+                                 </div>
+                                 <p className="text-sm text-gray-300 font-sans leading-relaxed pr-6">{n.message}</p>
+                                 <span className="text-[10px] text-gray-600 mt-2 block font-mono">{new Date(n.createdAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
+                            ))
+                         ) : (
+                            <div className="p-8 text-center text-gray-600 text-xs uppercase tracking-widest font-bold">Nenhuma notificação</div>
+                         )}
+                       </div>
+                    </div>
                   </div>
                 )}
               </div>
