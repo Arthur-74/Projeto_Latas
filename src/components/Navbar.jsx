@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
-import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck, Eye } from "lucide-react";
+import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck, Eye, Menu } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
 
@@ -11,6 +11,7 @@ export const Navbar = () => {
   const { getUserPercentage } = useAppData();
   const navigate = useNavigate();
   const [showNotifs, setShowNotifs] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -175,12 +176,47 @@ export const Navbar = () => {
                 )}
               </div>
 
-              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')} title="Configurações">
-                <SettingsIcon className="h-5 w-5 text-gray-400 hover:text-white transition-colors" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout} title="Sair">
-                <LogOut className="h-5 w-5" />
-              </Button>
+              {/* User Menu Dropdown */}
+              <div 
+                 className="relative"
+                 onMouseEnter={() => setShowUserMenu(true)}
+                 onMouseLeave={() => setShowUserMenu(false)}
+              >
+                <Button variant="ghost" size="icon" title="Menu do Sistema" className="pointer-events-none">
+                   <Menu className="h-5 w-5 text-gray-400 hover:text-white transition-colors" />
+                </Button>
+                {showUserMenu && (
+                  <div className="absolute right-0 top-full pt-2 z-50 animate-fade-in">
+                    <div className="w-56 bg-[#121212] border border-white/10 shadow-2xl clip-diagonal flex flex-col p-2">
+                       <button 
+                          onClick={() => { setShowUserMenu(false); navigate('/settings'); }}
+                          className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-gray-300 hover:text-white hover:bg-white/10 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                       >
+                          <SettingsIcon className="w-4 h-4" />
+                          Configurações
+                       </button>
+
+                       <button 
+                          onClick={() => { setShowUserMenu(false); navigate('/notifications'); }}
+                          className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-gray-300 hover:text-white hover:bg-white/10 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                       >
+                          <Bell className="w-4 h-4" />
+                          Meus Alertas
+                       </button>
+
+                       <div className="h-px bg-white/10 my-2"></div>
+                       
+                       <button 
+                          onClick={() => { setShowUserMenu(false); handleLogout(); }}
+                          className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-[#cc0000] hover:text-white hover:bg-[#cc0000] uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                       >
+                          <LogOut className="w-4 h-4" />
+                          Finalizar Sessão
+                       </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="flex gap-2">
