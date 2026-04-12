@@ -14,6 +14,7 @@ import { Register } from './pages/Register';
 import { AdminRoute } from './components/AdminRoute';
 import { AdminCatalog } from './pages/admin/AdminCatalog';
 import { AdminGamification } from './pages/admin/AdminGamification';
+import { AdminVerifications } from './pages/admin/AdminVerifications';
 import { Settings } from './pages/Settings';
 import { Toaster } from 'react-hot-toast';
 
@@ -38,6 +39,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/admin/catalog" element={<AdminRoute><AdminCatalog /></AdminRoute>} />
                 <Route path="/admin/gamification" element={<AdminRoute><AdminGamification /></AdminRoute>} />
+                <Route path="/admin/verifications" element={<AdminRoute><AdminVerifications /></AdminRoute>} />
               </Routes>
             </main>
           </div>

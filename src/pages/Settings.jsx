@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { User, Mail, Shield, CheckCircle, Save, AlertTriangle, UploadCloud, FileImage, X, Info, Clock, BadgeCheck } from "lucide-react";
+import { User, Mail, Shield, CheckCircle, Save, AlertTriangle, UploadCloud, FileImage, X, Info, Clock, BadgeCheck, XCircle } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import toast from "react-hot-toast";
 
@@ -21,7 +21,7 @@ const checkPasswordRules = (pwd) => ({
 });
 
 export const Settings = () => {
-  const { user, updateUserData } = useAuth();
+  const { user, updateUserData, submitVerification, getAllVerifications } = useAuth();
   
   if (!user) {
     return <Navigate to="/login" />;
@@ -52,7 +52,8 @@ export const Settings = () => {
   const [verificacaoDesc, setVerificacaoDesc] = useState("");
   const [verificacaoFiles, setVerificacaoFiles] = useState([]);
   const verifyFileRef = useRef(null);
-  const formStatus = user.isVerified ? "approved" : (user.verification_status === "pending" ? "pending" : "idle");
+  const formStatus = user.isVerified ? "approved" : (user.verification_status && user.verification_status !== "idle" ? user.verification_status : "idle");
+  const myVerificationObj = getAllVerifications().find(v => v.userId === user.id) || null;
 
   // Handle Tab Switch
   const handleTabChange = (tabId) => {
@@ -216,7 +217,7 @@ export const Settings = () => {
        toast.error("Anexe provas e digite uma descrição.");
        return;
     }
-    updateUserData({ verification_status: "pending" });
+    submitVerification(verificacaoDesc, verificacaoFiles);
     setIsDirty(false);
     toast.success("Solicitação enviada! Previsão de análise: Até 72h.", { duration: 5000 });
   };
@@ -490,8 +491,40 @@ export const Settings = () => {
                    </div>
                  )}
 
-                 {formStatus === "idle" && (
+                 {formStatus === "rejected" && (
+                   <div className="flex flex-col items-center justify-center py-12 text-center bg-red-600/10 border border-red-600/30 clip-diagonal p-8 shadow-2xl mb-8">
+                     <XCircle className="w-20 h-20 text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
+                     <h3 className="text-xl font-display uppercase tracking-widest text-red-500 mb-2">Auditoria Reprovada</h3>
+                     <p className="text-red-500/70 text-sm font-bold tracking-widest uppercase leading-relaxed mb-6">
+                       Sua coleção não atendeu aos requisitos mínimos. Resposta Oficial do Curador:
+                     </p>
+                     {myVerificationObj?.adminMessage && (
+                        <div className="bg-[#0a0a0a] border-l-4 border-l-red-500 p-4 text-left w-full">
+                           <p className="text-gray-300 font-sans italic">"{myVerificationObj.adminMessage}"</p>
+                        </div>
+                     )}
+                   </div>
+                 )}
+
+                 {(formStatus === "idle" || formStatus === "review") && (
                    <div className="space-y-8 pb-8">
+                     {formStatus === "review" && (
+                       <div className="bg-orange-500/10 border border-orange-500/50 p-6 clip-diagonal shadow-2xl">
+                         <h3 className="text-orange-500 font-display uppercase tracking-widest text-lg mb-2 flex items-center gap-2">
+                           <AlertTriangle className="w-5 h-5" /> Revisão Solicitada
+                         </h3>
+                         <p className="text-orange-500/70 text-sm font-bold tracking-widest uppercase mb-4">
+                           Foram encontradas divergências. O avaliador exigiu as seguintes correções:
+                         </p>
+                         <div className="bg-[#0a0a0a] border-l-4 border-l-orange-500 p-4 mb-4">
+                            <p className="text-gray-300 font-sans italic">"{myVerificationObj?.adminMessage}"</p>
+                         </div>
+                         <p className="text-xs text-gray-500 uppercase font-bold tracking-widest mt-4">
+                           Por favor, reenvie o formulário com as adequações solicitadas.
+                         </p>
+                       </div>
+                     )}
+
                      {/* Orientacoes */}
                      <div className="bg-[#121212] border-l-4 border-monster-neon p-6 relative shadow-lg">
                        <div className="absolute top-0 right-0 p-2"><Info className="w-5 h-5 text-gray-600" /></div>
