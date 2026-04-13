@@ -38,9 +38,37 @@ export const CanDetail = () => {
     const result = toggleFavorite(monster.id);
     if (result.success) {
       if (result.isAdded) {
-        toast.success("❤️ Adicionado aos favoritos!");
+        toast.custom((t) => (
+          <div className={`flex items-center gap-4 bg-[#121212] border-2 border-[#cc0000] p-4 shadow-[0_0_15px_rgba(204,0,0,0.2)] clip-diagonal animate-in fade-in zoom-in duration-300`}>
+             <div className="shrink-0 w-12 h-12 bg-[#cc0000]/20 flex items-center justify-center clip-diagonal">
+                <Heart className="w-6 h-6 text-[#cc0000] drop-shadow-[0_0_8px_rgba(204,0,0,0.8)] fill-[#cc0000]" />
+             </div>
+             <div>
+                <p className="text-[10px] font-bold text-[#cc0000] uppercase tracking-widest leading-none mb-1">
+                  FAVORITA
+                </p>
+                <p className="font-sans font-bold text-sm text-gray-300">
+                  Adicionada aos favoritos!
+                </p>
+             </div>
+          </div>
+        ), { duration: 3000 });
       } else {
-        toast("Removido dos favoritos.");
+        toast.custom((t) => (
+          <div className={`flex items-center gap-4 bg-[#121212] border border-gray-600 p-4 shadow-xl clip-diagonal animate-in fade-in zoom-in duration-300`}>
+             <div className="shrink-0 w-12 h-12 bg-gray-800 flex items-center justify-center clip-diagonal">
+                <Heart className="w-6 h-6 text-gray-400" />
+             </div>
+             <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">
+                  REMOVIDA
+                </p>
+                <p className="font-sans font-bold text-sm text-gray-400">
+                  Removida dos favoritos.
+                </p>
+             </div>
+          </div>
+        ), { duration: 3000 });
       }
     }
   };
