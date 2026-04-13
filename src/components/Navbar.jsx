@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
-import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck, Eye, Menu } from "lucide-react";
+import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck, Eye, Menu, LayoutDashboard, Archive, Trophy } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
 
@@ -36,75 +36,21 @@ export const Navbar = () => {
           </Link>
           <div className="hidden md:flex items-center gap-4 text-sm font-semibold uppercase tracking-widest text-gray-400">
             <Link to="/catalog" className="hover:text-monster-neon transition-colors">Catálogo</Link>
-            {user?.role === 'admin' && (
-              <div className="flex items-center ml-4 gap-2 border-l border-white/10 pl-4">
-                <Link to="/admin/catalog" className="text-monster-neon hover:text-white clip-diagonal-btn bg-monster-neon/10 md:inline-flex items-center hover:glow-text transition-all py-1 px-3 border border-monster-neon/80">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-archive mr-2"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
-                   Latas
-                </Link>
-                <Link to="/admin/gamification" className="text-yellow-500 hover:text-white clip-diagonal-btn bg-yellow-500/10 md:inline-flex items-center transition-all py-1 px-3 border border-yellow-500/80">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy mr-2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-                   Gamificação
-                </Link>
-                <Link to="/admin/verifications" className="text-sky-500 hover:text-white clip-diagonal-btn bg-sky-500/10 md:inline-flex items-center transition-all py-1 px-3 border border-sky-500/80">
-                  <BadgeCheck className="w-[18px] h-[18px] mr-2" />
-                   Auditoria
-                </Link>
-              </div>
-            )}
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-4">
-              <div className="hidden sm:flex flex-col items-end">
+              <div className="hidden sm:flex flex-col justify-center items-end">
                 <Link to={`/u/${user.username}`} className="text-sm font-bold hover:text-monster-neon transition-colors">
                   {user.username}
                 </Link>
-                <div className="mt-1 flex items-center justify-end h-5">
-                  {userCanCount > 0 && badgeInfo && badgeStyle ? (
-                    <div 
-                      className="inline-flex items-center gap-[6px] cursor-default"
-                      style={{ whiteSpace: "nowrap" }}
-                    >
-                      <div 
-                        className="font-display"
-                        style={{
-                          background: badgeStyle.bg,
-                          border: `1px solid ${badgeStyle.border}`,
-                          borderTop: `2px solid ${badgeStyle.accent}`,
-                          borderRadius: '4px',
-                          padding: '2px 6px',
-                          fontSize: '12px',
-                          fontWeight: 800,
-                          color: badgeStyle.accent,
-                          ...(badgeInfo.name === "Monstro" ? {
-                            boxShadow: `0 0 0 1px #00ff0033`,
-                            textShadow: `0 0 10px #00ff0088`
-                          } : {})
-                        }}
-                      >
-                        {badgeInfo.label}
-                      </div>
-                      <div 
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: 600,
-                          color: badgeStyle.accent,
-                          opacity: 0.85
-                        }}
-                      >
-                        {badgeInfo.name}
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
               </div>
               <div 
                 className="w-8 h-8 rounded-full bg-monster-gray border border-monster-neon flex items-center justify-center cursor-pointer glow-border overflow-hidden" 
-                onClick={() => navigate('/dashboard')}
-                title="Dashboard"
+                onClick={() => navigate(`/u/${user.username}`)}
+                title="Meu Perfil"
               >
                 {user.avatarUrl ? (
                   <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -189,6 +135,14 @@ export const Navbar = () => {
                   <div className="absolute right-0 top-full pt-2 z-50 animate-fade-in">
                     <div className="w-56 bg-[#121212] border border-white/10 shadow-2xl clip-diagonal flex flex-col p-2">
                        <button 
+                          onClick={() => { setShowUserMenu(false); navigate('/dashboard'); }}
+                          className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-gray-300 hover:text-white hover:bg-white/10 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                       >
+                          <LayoutDashboard className="w-4 h-4" />
+                          Dashboard
+                       </button>
+
+                       <button 
                           onClick={() => { setShowUserMenu(false); navigate('/settings'); }}
                           className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-gray-300 hover:text-white hover:bg-white/10 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
                        >
@@ -203,6 +157,34 @@ export const Navbar = () => {
                           <Bell className="w-4 h-4" />
                           Meus Alertas
                        </button>
+
+                       {user?.role === 'admin' && (
+                         <>
+                           <div className="h-px bg-white/10 my-1"></div>
+                           <p className="px-4 py-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Painel Admin</p>
+                           <button 
+                              onClick={() => { setShowUserMenu(false); navigate('/admin/catalog'); }}
+                              className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-monster-neon hover:text-white hover:bg-monster-neon/20 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                           >
+                              <Archive className="w-4 h-4" />
+                              Latas
+                           </button>
+                           <button 
+                              onClick={() => { setShowUserMenu(false); navigate('/admin/gamification'); }}
+                              className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-yellow-500 hover:text-white hover:bg-yellow-500/20 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                           >
+                              <Trophy className="w-4 h-4" />
+                              Gamificação
+                           </button>
+                           <button 
+                              onClick={() => { setShowUserMenu(false); navigate('/admin/verifications'); }}
+                              className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-sky-500 hover:text-white hover:bg-sky-500/20 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                           >
+                              <BadgeCheck className="w-4 h-4" />
+                              Auditoria
+                           </button>
+                         </>
+                       )}
 
                        <div className="h-px bg-white/10 my-2"></div>
                        
