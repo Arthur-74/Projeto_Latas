@@ -6,10 +6,11 @@ import { CanCard } from "../components/CanCard";
 import { Button } from "../components/ui/Button";
 import { FeaturedAchievementCard } from "../components/FeaturedAchievementCard";
 import { updateAchievementProgress } from "../lib/achievementsApi";
-import { UserCheck, Shield, Camera, Trash2, Heart, X, BadgeCheck } from "lucide-react";
+import { UserCheck, Shield, Camera, Trash2, Heart, X, BadgeCheck, Trophy, Flame, Zap } from "lucide-react";
 import { ImageCropModal } from "../components/ImageCropModal";
 import toast from "react-hot-toast";
-import { getBadgeInfo } from "../lib/badgeUtils";
+import { getBadgeInfo, getBadgeStyle, hexToRgba } from "../lib/badgeUtils";
+import { BADGE_ICONS } from "../lib/badgeIcons";
 
 export const Profile = () => {
   const { username } = useParams();
@@ -42,6 +43,18 @@ export const Profile = () => {
   // Use state or props depending if looking at self
   const displayAvatar = isOwner && user.avatarUrl ? user.avatarUrl : null;
   const displayBanner = isOwner && user.bannerUrl ? user.bannerUrl : null;
+
+  const calculateAverageRarity = () => {
+    if (displayCollection.length === 0) return "Nenhuma";
+    const rarityWeights = { "Comum": 1, "Raro": 2, "Ultra Raro": 3, "Edição Limitada": 4, "Exclusivo Regional": 5 };
+    const reverseWeights = { 1: "Comum", 2: "Raro", 3: "Ultra Raro", 4: "Ed. Limitada", 5: "Regional" };
+    const totalWeight = displayCollection.reduce((sum, can) => sum + (rarityWeights[can.rarity] || 1), 0);
+    const average = Math.round(totalWeight / displayCollection.length);
+    return reverseWeights[average] || "Comum";
+  };
+  
+  const averageRarity = calculateAverageRarity();
+  const badgeStyle = badgeInfo ? getBadgeStyle(badgeInfo.name) : null;
 
   const handleFileChange = (e, type) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -170,9 +183,11 @@ export const Profile = () => {
                {username}
              </h1>
              <p className="text-gray-400 font-bold uppercase tracking-widest text-sm flex gap-4">
-               <span>Progresso Real: <span className="text-monster-neon">{userCanCount > 0 && badgeInfo ? badgeInfo.name : "Nenhum"}</span></span>
-               <span>•</span>
-               <span>Latas: {userCanCount}</span>
+               <span>
+                 Membro desde <span className="text-monster-neon">
+                   {isOwner && user?.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : "15/01/2024"}
+                 </span>
+               </span>
              </p>
           </div>
           
@@ -192,14 +207,78 @@ export const Profile = () => {
           </div>
         </div>
 
-        {/* Featured Achievement */}
-        <div className="mb-16 max-w-sm">
+        {/* Metrics Grid */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          {/* Featured Achievement Card */}
           <FeaturedAchievementCard 
             userId={isOwner ? user.id : `mock-${username}`} 
             username={username}
             featuredId={isOwner ? user.featured_achievement_id : "a-first-blood"} 
           />
-        </div>
+          
+          {/* Badge Card */}
+          <div 
+            className={`p-6 flex items-center gap-4 clip-diagonal border border-transparent transition-colors w-full ${!badgeInfo ? 'bg-monster-gray/30 hover:border-monster-neon/50' : 'hover:brightness-110'}`}
+            style={{
+              ...(badgeInfo && badgeStyle ? {
+                background: hexToRgba(badgeStyle.accent, 0.05),
+                borderLeft: `4px solid ${badgeStyle.accent}`,
+                ...(badgeInfo.name === "Monstro" ? { boxShadow: `0 0 0 1px #00ff0033` } : {})
+              } : {})
+            }}
+          >
+            <div className="shrink-0 flex items-center justify-center w-10 h-10">
+              {badgeInfo && badgeStyle ? (
+                <div className="scale-[1.2] filter drop-shadow-md">
+                  {BADGE_ICONS[badgeInfo.name]}
+                </div>
+              ) : (
+                <Trophy className="h-10 w-10 text-gray-500" />
+              )}
+            </div>
+
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+              <div 
+                className="text-xs font-bold uppercase tracking-widest transition-colors"
+                style={{ color: badgeStyle ? badgeStyle.accent : "#9ca3af" }}
+              >
+                Badge Atual
+              </div>
+              {userCanCount > 0 && badgeInfo && badgeStyle ? (
+                <div 
+                  className="text-2xl font-display truncate flex items-baseline gap-2"
+                  style={{
+                    color: badgeStyle.accent,
+                    ...(badgeInfo.name === "Monstro" ? { textShadow: `0 0 10px #00ff0088` } : {})
+                  }}
+                >
+                  <span>{badgeInfo.label}</span>
+                  <span className="uppercase">{badgeInfo.name}</span>
+                </div>
+              ) : (
+                <div className="text-2xl font-display text-white mt-1">Nenhum</div>
+              )}
+            </div>
+          </div>
+
+          {/* Raridade Média */}
+          <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
+            <Flame className="h-10 w-10 text-monster-red" />
+            <div>
+              <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Raridade Média</div>
+              <div className="text-xl font-display text-white">{averageRarity}</div>
+            </div>
+          </div>
+
+          {/* Latas Totais */}
+          <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
+            <Zap className="h-10 w-10 text-monster-neon" />
+            <div>
+              <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Latas Totais</div>
+              <div className="text-2xl font-display text-white">{userCanCount}</div>
+            </div>
+          </div>
+        </section>
 
         {/* Favorite Showcase */}
         <div className="mb-16">

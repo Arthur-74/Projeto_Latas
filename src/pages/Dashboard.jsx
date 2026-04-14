@@ -27,6 +27,35 @@ export const Dashboard = () => {
   const ownedCans = user.collection.map(id => monsters.find(m => m.id === id)).filter(Boolean);
   const latestCans = [...ownedCans].reverse().slice(0, 4);
 
+  const calculateAverageRarity = () => {
+    if (ownedCans.length === 0) return "Nenhuma";
+    
+    const rarityWeights = {
+      "Comum": 1,
+      "Raro": 2,
+      "Ultra Raro": 3,
+      "Edição Limitada": 4,
+      "Exclusivo Regional": 5
+    };
+    
+    const reverseWeights = {
+      1: "Comum",
+      2: "Raro",
+      3: "Ultra Raro",
+      4: "Ed. Limitada",
+      5: "Regional"
+    };
+
+    const totalWeight = ownedCans.reduce((sum, can) => {
+      return sum + (rarityWeights[can.rarity] || 1);
+    }, 0);
+
+    const average = Math.round(totalWeight / ownedCans.length);
+    return reverseWeights[average] || "Comum";
+  };
+  
+  const averageRarity = calculateAverageRarity();
+
   return (
     <div className="container mx-auto px-4 py-8 space-y-12">
       {/* Header Info */}
@@ -58,21 +87,13 @@ export const Dashboard = () => {
 
       {/* Metrics & Trophies Grid */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
-          <Flame className="h-10 w-10 text-monster-red" />
-          <div>
-            <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Raridade Média</div>
-            <div className="text-2xl font-display text-white">Raro</div>
-          </div>
-        </div>
-        <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
-          <Zap className="h-10 w-10 text-monster-neon" />
-          <div>
-            <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Latas Faltantes</div>
-            <div className="text-2xl font-display text-white">{monsters.length - user.collection.length}</div>
-          </div>
-        </div>
-
+        {/* Featured Achievement Card */}
+        <FeaturedAchievementCard 
+          userId={user.id} 
+          username={user.username} 
+          featuredId={user.featured_achievement_id} 
+        />
+        
         {/* Badge Card */}
         <div 
           className={`p-6 flex items-center gap-4 clip-diagonal border border-transparent transition-colors w-full ${!badgeInfo ? 'bg-monster-gray/30 hover:border-monster-neon/50' : 'hover:brightness-110'}`}
@@ -117,13 +138,24 @@ export const Dashboard = () => {
             )}
           </div>
         </div>
-        
-        {/* Featured Achievement Card */}
-        <FeaturedAchievementCard 
-          userId={user.id} 
-          username={user.username} 
-          featuredId={user.featured_achievement_id} 
-        />
+
+        {/* Raridade Média */}
+        <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
+          <Flame className="h-10 w-10 text-monster-red" />
+          <div>
+            <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Raridade Média</div>
+            <div className="text-xl font-display text-white">{averageRarity}</div>
+          </div>
+        </div>
+
+        {/* Latas Totais */}
+        <div className="bg-monster-gray/30 p-6 flex items-center gap-4 clip-diagonal border border-transparent hover:border-monster-neon/50 transition-colors">
+          <Zap className="h-10 w-10 text-monster-neon" />
+          <div>
+            <div className="text-gray-400 text-xs font-bold uppercase tracking-widest">Latas Totais</div>
+            <div className="text-2xl font-display text-white">{user.collection.length}</div>
+          </div>
+        </div>
       </section>
 
       {/* Last Added */}
