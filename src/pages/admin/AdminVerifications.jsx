@@ -37,12 +37,55 @@ export const AdminVerifications = () => {
      }
 
      if (showMemoPanel && adminMemo.trim() === "") {
-        toast.error("O preenchimento do relatório técnico é obrigatório.");
+        toast.error("O preenchimento do relatório técnico é obrigatório.", {
+          className: 'clip-diagonal',
+          style: {
+            background: '#0a0a0a',
+            color: '#ef4444',
+            border: '1px solid #ef4444',
+            borderRadius: '0',
+            fontFamily: '"Rajdhani", sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em'
+          },
+          iconTheme: {
+            primary: '#ef4444',
+            secondary: '#0a0a0a',
+          },
+        });
         return;
      }
 
      evaluateVerification(selectedVerif.id, selectedVerif.userId, status, adminMemo);
-     toast.success(`Protocolo marcado como: ${status.toUpperCase()} com sucesso!`);
+     
+     let toastColor = '#39ff14'; // neon
+     if (status === 'review') toastColor = '#f97316'; // orange
+     if (status === 'rejected') toastColor = '#ef4444'; // red
+     if (status === 'pending') toastColor = '#eab308'; // yellow
+
+     const statusText = {
+        approved: "APROVADO",
+        review: "REVISÃO",
+        rejected: "REPROVADO",
+        pending: "REABERTO"
+     }[status] || status.toUpperCase();
+
+     toast.success(`Protocolo marcado como: ${statusText}`, {
+        className: 'clip-diagonal',
+        style: {
+          background: '#0a0a0a',
+          color: toastColor,
+          border: `1px solid ${toastColor}`,
+          borderRadius: '0',
+          fontFamily: '"Rajdhani", sans-serif',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em'
+        },
+        iconTheme: {
+          primary: toastColor,
+          secondary: '#0a0a0a',
+        },
+     });
      
      // Remove from UI if decided, or just update data
      loadData();
@@ -63,15 +106,16 @@ export const AdminVerifications = () => {
   const filteredVerifications = verifications.filter(v => v.status === activeTab);
 
   return (
-    <div className="flex-1 w-full flex flex-col md:flex-row h-full overflow-hidden bg-[#050505]">
-      {/* Left panel - List */}
-      <div className="w-full md:w-1/3 lg:w-1/4 border-r border-white/5 bg-[#0a0a0a] flex flex-col h-[calc(100vh-64px)] overflow-hidden">
-        <div className="p-6 border-b border-white/5">
-          <h2 className="text-xl font-display text-white uppercase tracking-widest flex items-center gap-2">
-            <BadgeCheck className="w-5 h-5 text-monster-neon" />
-            Auditoria
-          </h2>
-          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Fila de Triagem</p>
+    <div className="absolute inset-0 -bottom-16 flex flex-col md:flex-row overflow-hidden bg-[#050505]">
+      {/* Left panel - List with Header */}
+      <div className="w-full md:w-fit shrink-0 border-r border-white/5 bg-[#0a0a0a] flex flex-col overflow-hidden">
+        <div className="p-6 border-b border-monster-neon/20 shrink-0">
+          <h1 className="text-3xl lg:text-4xl font-display text-white uppercase tracking-widest flex flex-wrap items-center gap-2">
+             Auditoria <span className="text-sky-500">CMS</span>
+          </h1>
+          <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mt-2">
+            Sistema de Moderação e Triagem
+          </p>
         </div>
         
         <div className="border-b border-white/5 bg-[#121212] overflow-x-auto flex flex-nowrap" style={{ scrollbarWidth: 'none' }}>
@@ -81,7 +125,7 @@ export const AdminVerifications = () => {
            <button onClick={() => setActiveTab("rejected")} className={`shrink-0 px-4 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors ${activeTab === 'rejected' ? 'text-red-500 border-b-2 border-red-500 bg-white/5' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>Reprovadas</button>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
            {filteredVerifications.length === 0 ? (
              <div className="text-center text-gray-600 text-xs font-bold uppercase mt-10">Nenhuma da categoria.</div>
            ) : (
@@ -106,7 +150,7 @@ export const AdminVerifications = () => {
       </div>
 
       {/* Right panel - Details */}
-      <div className="flex-1 bg-[#121212] flex flex-col h-[calc(100vh-64px)] overflow-y-auto">
+      <div className="flex-1 bg-[#121212] flex flex-col h-full overflow-y-auto">
          {!selectedVerif ? (
             <div className="flex-1 flex flex-col items-center justify-center text-gray-600 opacity-50">
                <AlertCircle className="w-16 h-16 mb-4" />
@@ -115,8 +159,8 @@ export const AdminVerifications = () => {
          ) : (
             <div className="p-8 max-w-4xl mx-auto w-full animate-fade-in relative">
                
-               {/* Quick close for mobile */}
-               <button onClick={() => setSelectedVerif(null)} className="md:hidden absolute top-4 right-4 text-gray-500">
+               {/* Quick close */}
+               <button onClick={() => setSelectedVerif(null)} className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors p-2 cursor-pointer z-10">
                   <X className="w-6 h-6" />
                </button>
 

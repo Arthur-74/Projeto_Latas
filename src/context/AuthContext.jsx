@@ -19,13 +19,49 @@ export const AuthProvider = ({ children }) => {
       const parsedUser = JSON.parse(storedUser);
       
       // Injection: dynamic check verification status from mock DB
-      const db = JSON.parse(localStorage.getItem("monsterVault_verifications") || "[]");
+      let db = JSON.parse(localStorage.getItem("monsterVault_verifications") || "[]");
+      
+      // AUTO SEED MOCK AUDITS FOR TESTING
+      if (db.length === 0) {
+         for(let i = 1; i <= 10; i++) {
+            db.push({
+               id: `v-mock-${i}`,
+               userId: `u-mock-${i}`,
+               username: `collector_fan_${i}`,
+               avatarUrl: "",
+               status: "pending",
+               desc: `[PROTOCOLO FICTÍCIO]\nSou um grande fã há anos e finalmente consegui as provas necessárias para enviar minha auditoria de perfil. Coleciono latas e gostaria do selo de verificação. \n\nAtenciosamente, User ${i}`,
+               files: [ { name: `foto_prateleira_${i}.png`, size: "2.4" }, { name: `foto_detalhes_fundo_${i}.jpg`, size: "1.2" } ],
+               adminMessage: null,
+               submittedAt: new Date(Date.now() - (i * 86400000)).toISOString()
+            });
+         }
+         localStorage.setItem("monsterVault_verifications", JSON.stringify(db));
+      }
+
+      // Force any existing mock to pending
+      let forceModified = false;
+      db = db.map(v => {
+         if (v.id.includes('v-mock') && v.status !== 'pending') {
+            forceModified = true;
+            return { ...v, status: 'pending' };
+         }
+         return v;
+      });
+      if (forceModified) {
+         localStorage.setItem("monsterVault_verifications", JSON.stringify(db));
+      }
+
       const myVerif = db.find(v => v.userId === parsedUser.id);
       if (myVerif) {
          parsedUser.verification_status = myVerif.status;
          if (myVerif.status === "approved") {
             parsedUser.isVerified = true;
          }
+      } else {
+         // Se a auditoria sumiu ou foi deletada, reseta o status do usuário
+         parsedUser.verification_status = "idle";
+         parsedUser.isVerified = parsedUser.email === "verificado@monster.com"; // Match login fallback
       }
       
       setUser(parsedUser);
