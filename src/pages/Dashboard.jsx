@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
 import { Link, Navigate } from "react-router-dom";
 import { CanCard } from "../components/CanCard";
-import { Trophy, Flame, Zap } from "lucide-react";
+import { Trophy, Flame, Zap, BadgeCheck, Shield } from "lucide-react";
 import { FeaturedAchievementCard } from "../components/FeaturedAchievementCard";
 import { getBadgeInfo, getBadgeStyle, hexToRgba } from "../lib/badgeUtils";
 import { BADGE_ICONS } from "../lib/badgeIcons";
@@ -60,28 +60,34 @@ export const Dashboard = () => {
     <div className="container mx-auto px-4 py-8 space-y-12">
       {/* Header Info */}
       <section className="flex flex-col md:flex-row items-center gap-8 bg-monster-gray/40 border border-monster-neon/30 p-8 clip-diagonal relative glow-border">
-        <div className="w-32 h-32 rounded-full border-4 border-monster-neon bg-monster-dark flex items-center justify-center overflow-hidden shrink-0">
-          <span className="text-4xl font-display text-monster-neon object-cover">{user.username.charAt(0).toUpperCase()}</span>
+        <div className="w-32 h-32 rounded-full border-4 border-monster-neon bg-monster-dark flex items-center justify-center glow-border shadow-2xl relative shrink-0">
+             {user.avatarUrl ? (
+               <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+             ) : (
+               <span className="text-4xl font-display text-monster-neon object-cover">{(user.displayName || user.username).charAt(0).toUpperCase()}</span>
+             )}
+             
+             {/* Badge Admin */}
+             <div className="absolute bottom-1 right-1 flex gap-1 z-20">
+               {user?.isVerified && (
+                 <div className="text-white rounded-full shadow-lg" title="Conta Verificada">
+                   <BadgeCheck className="h-7 w-7 fill-sky-500 text-white" />
+                 </div>
+               )}
+               {user?.role === "admin" && (
+                 <div className="bg-monster-neon text-monster-dark p-1 rounded-full shadow-lg" title="Administrador">
+                   <Shield className="h-5 w-5" />
+                 </div>
+               )}
+             </div>
         </div>
         <div className="flex-1 space-y-2 text-center md:text-left">
           <h1 className="text-4xl font-display tracking-widest uppercase text-white">
-            {user.username}
+            {user.displayName || user.username}
           </h1>
           <p className="text-monster-neon font-bold tracking-widest uppercase text-sm">
-            Membro desde {user.memberSince} • Latas Totais: {user.collection.length}
+            Membro desde {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : "15/01/2024"}
           </p>
-        </div>
-        
-        <div className="w-full md:w-64">
-           <div className="flex justify-between items-end mb-2 font-display uppercase tracking-widest">
-             <span className="text-gray-400">Progresso</span>
-             <span className="text-2xl text-monster-neon glow-text">
-               {userCanCount > 0 && badgeInfo ? `${userCanCount} · ${badgeInfo.name}` : "0 latas"}
-             </span>
-           </div>
-           <div className="h-3 w-full bg-monster-dark border border-white/10">
-             <div className="h-full bg-monster-neon transition-all duration-1000" style={{ width: `${progressBarWidth}%` }}/>
-           </div>
         </div>
       </section>
 

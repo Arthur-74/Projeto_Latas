@@ -43,6 +43,7 @@ export const Profile = () => {
   // Use state or props depending if looking at self
   const displayAvatar = isOwner && user.avatarUrl ? user.avatarUrl : null;
   const displayBanner = isOwner && user.bannerUrl ? user.bannerUrl : null;
+  const displayTitle = isOwner && user.displayName ? user.displayName : username;
 
   const calculateAverageRarity = () => {
     if (displayCollection.length === 0) return "Nenhuma";
@@ -109,7 +110,7 @@ export const Profile = () => {
         ) : (
           <div className="absolute inset-0 flex items-center justify-center opacity-10 noise-bg">
              <span className="text-[12rem] font-display text-monster-neon glow-text uppercase font-bold tracking-[0.5em] ml-[0.5em]">
-               {username}
+               {displayTitle}
              </span>
           </div>
         )}
@@ -144,7 +145,7 @@ export const Profile = () => {
              {displayAvatar ? (
                <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
              ) : (
-               <span className="text-6xl font-display text-white uppercase">{username.charAt(0)}</span>
+               <span className="text-6xl font-display text-white uppercase">{displayTitle.charAt(0)}</span>
              )}
              
              {/* Badge Admin */}
@@ -180,7 +181,7 @@ export const Profile = () => {
 
           <div className="flex-1 space-y-2 mb-4 md:mb-0">
              <h1 className="text-4xl md:text-5xl font-display uppercase tracking-widest text-white mt-4 md:mt-0">
-               {username}
+               {displayTitle}
              </h1>
              <p className="text-gray-400 font-bold uppercase tracking-widest text-sm flex gap-4">
                <span>

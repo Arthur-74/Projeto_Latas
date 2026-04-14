@@ -44,7 +44,7 @@ export const Navbar = () => {
             <div className="flex items-center gap-4">
               <div className="hidden sm:flex flex-col justify-center items-end">
                 <Link to={`/u/${user.username}`} className="text-sm font-bold hover:text-monster-neon transition-colors">
-                  {user.username}
+                  {user.displayName || user.username}
                 </Link>
               </div>
               <div 
