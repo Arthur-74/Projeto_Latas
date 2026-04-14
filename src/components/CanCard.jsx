@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Check, Plus, Heart } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useAppData } from "../context/AppDataContext";
 import toast from "react-hot-toast";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
@@ -9,9 +10,13 @@ import { cn } from "../lib/utils";
 
 export const CanCard = ({ monster }) => {
   const { user, updateCollection, toggleFavorite } = useAuth();
+  const { getItemImages } = useAppData();
   
   const isOwned = user?.collection?.includes(monster.id);
   const isFavorited = user?.favorites?.includes(monster.id);
+
+  const images = getItemImages(monster.id);
+  const primaryImg = images.find(i => i.principal) || images[0];
 
   const handleToggle = (e) => {
     e.preventDefault();
@@ -78,10 +83,9 @@ export const CanCard = ({ monster }) => {
       )}
     >
       <div className="flex-1 flex flex-col h-full">
-        {/* Placeholder for Image */}
         <div className="w-full h-48 mb-4 bg-black/40 flex items-center justify-center clip-diagonal relative overflow-hidden">
-          {monster.imageUrl ? (
-             <img src={monster.imageUrl} alt={monster.name} className="h-full object-contain mix-blend-screen" />
+          {primaryImg ? (
+             <img src={primaryImg.url} alt={monster.name} className="h-full object-contain mix-blend-screen" />
           ) : (
             <div className="text-white/10 flex flex-col items-center justify-center">
               <div className="w-12 h-24 border-2 border-dashed border-white/20 rounded-md"></div>
@@ -99,7 +103,7 @@ export const CanCard = ({ monster }) => {
           <h3 className="text-xl font-display uppercase tracking-wider text-monster-white group-hover:text-monster-neon transition-colors line-clamp-1">
             {monster.name}
           </h3>
-          <p className="text-sm text-gray-400 capitalize">{monster.line} • {monster.flavor}</p>
+          <p className="text-sm text-gray-400 capitalize">{monster.line} {monster.flavor && `• ${monster.flavor}`}</p>
         </div>
         
         <div className="mt-3 flex items-center justify-between">
@@ -111,7 +115,7 @@ export const CanCard = ({ monster }) => {
       <div className="mt-4 pt-4 border-t border-white/10 w-full z-10 flex gap-2" onClick={(e) => e.stopPropagation()}>
         <Button 
           variant={isOwned ? "outline" : "primary"} 
-          className="flex-1"
+          className="flex-1 text-xs"
           onClick={handleToggle}
         >
           {isOwned ? (
@@ -132,7 +136,7 @@ export const CanCard = ({ monster }) => {
           >
             <Heart 
               className={cn(
-                "h-5 w-5 transition-all duration-300",
+                "h-4 w-4 transition-all duration-300",
                 isFavorited 
                   ? "fill-[#cc0000] text-[#cc0000] drop-shadow-[0_0_8px_rgba(204,0,0,0.5)] animate-in zoom-in" 
                   : "text-gray-400"
