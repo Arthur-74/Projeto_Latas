@@ -27,7 +27,7 @@ function App() {
           <div className="min-h-screen flex flex-col bg-monster-dark text-monster-white">
             <Toaster position="bottom-right" />
             <Navbar />
-            <main className="flex-1 flex flex-col relative z-10 w-full mb-16">
+            <main className="flex-1 flex flex-col relative z-10 w-full pt-16 mb-16">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/catalog" element={<Catalog />} />

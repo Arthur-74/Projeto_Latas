@@ -106,7 +106,7 @@ export const AdminVerifications = () => {
   const filteredVerifications = verifications.filter(v => v.status === activeTab);
 
   return (
-    <div className="absolute inset-0 -bottom-16 flex flex-col md:flex-row overflow-hidden bg-[#050505]">
+    <div className="absolute inset-x-0 top-16 -bottom-16 flex flex-col md:flex-row overflow-hidden bg-[#050505]">
       {/* Left panel - List with Header */}
       <div className="w-full md:w-fit shrink-0 border-r border-white/5 bg-[#0a0a0a] flex flex-col overflow-hidden">
         <div className="p-6 border-b border-monster-neon/20 shrink-0">

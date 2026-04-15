@@ -25,7 +25,7 @@ export const Navbar = () => {
   const unreadCount = notifications?.filter(n => !n.read).length || 0;
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-monster-neon/20 bg-monster-dark/80 backdrop-blur-md">
+    <nav className="fixed top-0 z-50 w-full border-b border-monster-neon/20 bg-monster-dark/80 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2 group">

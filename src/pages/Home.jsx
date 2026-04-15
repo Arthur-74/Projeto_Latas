@@ -13,9 +13,9 @@ export const Home = () => {
   const featured = monsters.slice(0, 6); // Grab first 6 for featured
 
   return (
-    <div className="w-full flex-1 flex flex-col">
+    <div className="w-full flex-1 flex flex-col -mt-16">
       {/* Hero Section */}
-      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[100vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-monster-dark noise-bg" />
         <div className="absolute inset-0 z-0 bg-gradient-to-t from-monster-dark via-transparent to-transparent opacity-90" />
         
@@ -23,11 +23,11 @@ export const Home = () => {
           <h1 className="text-8xl md:text-[12rem] font-display text-monster-white uppercase tracking-tighter leading-none select-none italic">
             MONSTER
           </h1>
-          <h2 className="text-4xl md:text-[4.5rem] text-[#39ff14] font-display font-light mt-[-1rem] md:mt-[-2.5rem] drop-shadow-[0_0_8px_rgba(57,255,20,0.5)] italic">
+          <h2 className="text-4xl md:text-[5rem] text-[#39ff14] font-display font-light mt-[-1rem] md:mt-[-2.5rem] drop-shadow-[0_0_8px_rgba(57,255,20,0.5)] italic">
             For Collectors
           </h2>
-          <h4 className="text-xl md:text-3xl text-monster-white font-display tracking-[0.3em] font-bold mb-8 uppercase">
-            For every monster collector
+          <h4 className="text-2xl text-monster-white font-display tracking-[0.3em] font-bold mb-8 uppercase leading-[0]">
+            The home of Monster collectors
           </h4>
           
           <div className="flex gap-4 mt-8 flex-wrap justify-center min-h-[56px] items-center">
