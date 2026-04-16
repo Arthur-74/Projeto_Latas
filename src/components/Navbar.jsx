@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
-import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck, Eye, Menu, LayoutDashboard, Archive, Trophy } from "lucide-react";
+import { Zap, LogOut, User as UserIcon, Settings as SettingsIcon, Bell, BadgeCheck, Eye, Menu, LayoutDashboard, Archive, Trophy, Database } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getBadgeInfo, getBadgeStyle } from "../lib/badgeUtils";
 
@@ -182,6 +182,13 @@ export const Navbar = () => {
                            >
                               <BadgeCheck className="w-4 h-4" />
                               Auditoria
+                           </button>
+                           <button 
+                              onClick={() => { setShowUserMenu(false); navigate('/admin/data-lab'); }}
+                              className="flex items-center gap-3 w-full text-left px-4 py-3 text-xs text-[#a855f7] hover:text-white hover:bg-[#a855f7]/20 uppercase tracking-widest font-bold transition-colors clip-diagonal-btn"
+                           >
+                              <Database className="w-4 h-4" />
+                              Data Lab
                            </button>
                          </>
                        )}

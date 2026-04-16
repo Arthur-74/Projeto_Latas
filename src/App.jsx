@@ -17,6 +17,7 @@ import { AdminCatalog } from './pages/admin/AdminCatalog';
 import { AdminGamification } from './pages/admin/AdminGamification';
 import { AdminVerifications } from './pages/admin/AdminVerifications';
 import { Settings } from './pages/Settings';
+import { DataLab } from './pages/DataLab';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/admin/catalog" element={<AdminRoute><AdminCatalog /></AdminRoute>} />
                 <Route path="/admin/gamification" element={<AdminRoute><AdminGamification /></AdminRoute>} />
                 <Route path="/admin/verifications" element={<AdminRoute><AdminVerifications /></AdminRoute>} />
+                <Route path="/admin/data-lab" element={<AdminRoute><DataLab /></AdminRoute>} />
               </Routes>
             </main>
           </div>
